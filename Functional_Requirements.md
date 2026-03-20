@@ -1,0 +1,36 @@
+# Finance & Subscription Tracker: Functional Requirements
+
+## Platform Overview
+
+The **Personal Finance & Subscription Tracker** is a Spring Boot application designed to help individuals and families manage recurring subscriptions, track expenses by category, and monitor their financial health. The platform enables users to centralize subscription management across multiple services (e.g., Netflix, Spotify, cloud storage), set spending budgets per category, share subscription costs with other users, and gain insights into their disposable income and upcoming payment obligations. Through an intuitive API-driven architecture, users can maintain a complete record of their payment methods, transaction history, and financial metrics to achieve better spending awareness and control.
+
+---
+
+**1. User Profile & Income Management**
+*   **FR 1.1:** The system shall allow users to register and manage their profile (name, universally unique email, and monthly income).
+*   **FR 1.2:** The system must use the user's monthly income as the baseline to calculate their financial health and available disposable income.
+
+**2. Subscription Lifecycle Management**
+*   **FR 2.1:** Users shall be able to create, read, update, and delete (CRUD) recurring subscriptions (e.g., Netflix, Internet).
+*   **FR 2.2:** Each subscription must track core pricing details, billing frequency (Monthly/Yearly), and the exact upcoming renewal date.
+*   **FR 2.3:** The system must normalize yearly subscription costs into monthly equivalents for accurate budget calculation.
+
+**3. Subscription Sharing (Many-to-Many Cost Split)**
+*   **FR 3.1:** The system shall allow a single subscription to be shared among multiple users (e.g., family members or flatmates).
+*   **FR 3.2:** Users must be able to specify their exact contribution to a shared subscription using either a **percentage share** (e.g., 50%) or a **fixed monetary amount**.
+*   **FR 3.3:** The system must accurately distribute the overall subscription cost to the respective users' personal budgets based on their defined share.
+
+**4. Category & Budget Tracking**
+*   **FR 4.1:** Users shall be able to create custom categories (e.g., "Entertainment", "Utilities") to logically group their subscriptions.
+*   **FR 4.2:** The system shall allow users to set a maximum spending limit (Budget) for any specific category.
+*   **FR 4.3:** The system must automatically update the "current spending" within a budget whenever a subscription in that category is added, removed, or has its cost modified.
+
+**5. Payment Methods & Transactions**
+*   **FR 5.1:** Users shall be able to register various specific payment methods (e.g., Credit Card, PayPal, Custom Bank Transfer) linked securely to their profile.
+*   **FR 5.2:** Each subscription shall be linked to a single primary payment method to track where the money is physically withdrawn from.
+*   **FR 5.3:** The system shall maintain an immutable transaction registry that logs raw historical payments (amount and transaction date) tied to specific subscriptions.
+
+**6. Financial Dashboard & Analytics**
+*   **FR 6.1:** The system shall calculate and display the user's **Disposable Income** (Monthly Income - Total Monthly Subscription Liabilities).
+*   **FR 6.2:** The system shall identify and display "Upcoming Renewals" (subscriptions due for payment within the next 7 days).
+*   **FR 6.3:** The system shall provide an aggregated summary of expected costs broken down by category.
