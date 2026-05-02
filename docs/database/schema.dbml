@@ -25,6 +25,19 @@ Table users {
   monthly_income decimal [not null]
 }
 
+Table roles {
+  id bigint [primary key]
+  name varchar(50) [not null, unique]
+}
+
+Table user_roles {
+  user_id bigint [not null, ref: > users.id]
+  role_id bigint [not null, ref: > roles.id]
+  indexes {
+    (user_id, role_id) [pk]
+  }
+}
+
 Table transactions {
   id bigint [primary key]
   amount decimal [not null]
