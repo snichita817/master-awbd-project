@@ -25,6 +25,10 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
 
+    @JsonIgnore
+    @Column(nullable = false)
+    private String password;
+
     @NotNull(message = "Monthly income is required")
     @DecimalMin(value = "0.0", message = "Monthly income must be positive")
     @Column(nullable = false)
@@ -84,6 +88,13 @@ public class User {
         this.email = email;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     public BigDecimal getMonthlyIncome() {
         return monthlyIncome;

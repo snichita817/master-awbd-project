@@ -9,8 +9,6 @@ spring:
     properties:
       hibernate:
         format_sql: true
-  thymeleaf:
-    check-template-location: false
 
 springdoc:
   api-docs:

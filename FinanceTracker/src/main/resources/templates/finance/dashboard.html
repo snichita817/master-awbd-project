@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Dashboard – Finance Tracker</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: system-ui, sans-serif; background: #f0f4f8; color: #1a202c; }
+        nav {
+            background: #2d3748; color: #fff; padding: .75rem 1.5rem;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        nav a { color: #e2e8f0; text-decoration: none; margin-right: 1rem; font-size: .9rem; }
+        nav a:hover { color: #fff; }
+        .nav-right { display: flex; align-items: center; gap: 1rem; font-size: .875rem; }
+        main { max-width: 960px; margin: 2rem auto; padding: 0 1rem; }
+        h1 { font-size: 1.6rem; margin-bottom: 1.5rem; }
+        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .card {
+            background: #fff; border-radius: 8px; padding: 1.25rem 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,.08);
+        }
+        .card h3 { font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; color: #718096; margin-bottom: .5rem; }
+        .card .value { font-size: 1.8rem; font-weight: 700; }
+        .card .value.green { color: #276749; }
+        .card .value.blue  { color: #2b6cb0; }
+        .card .value.orange{ color: #c05621; }
+        table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+        th { background: #edf2f7; text-align: left; padding: .6rem 1rem; font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; color: #4a5568; }
+        td { padding: .65rem 1rem; border-top: 1px solid #e2e8f0; font-size: .9rem; }
+        .badge { display: inline-block; padding: .2rem .6rem; border-radius: 9999px; font-size: .75rem; font-weight: 600; }
+        .badge-green { background: #c6f6d5; color: #276749; }
+        .badge-blue  { background: #bee3f8; color: #2b6cb0; }
+        .nav-links a { color: #a0aec0; }
+        .nav-links a:hover { color: #fff; }
+        form { display: inline; }
+        button.logout { background: none; border: 1px solid #718096; color: #e2e8f0; padding: .3rem .75rem; border-radius: 4px; cursor: pointer; font-size: .85rem; }
+        button.logout:hover { background: #4a5568; }
+        .empty { color: #a0aec0; font-style: italic; padding: 1rem; }
+    </style>
+</head>
+<body>
+<nav>
+    <div class="nav-links">
+        <strong style="margin-right:1.5rem;">Finance Tracker</strong>
+        <a th:href="@{/dashboard}">Dashboard</a>
+        <a th:href="@{/subscriptions}">Subscriptions</a>
+        <a th:href="@{/categories}">Categories</a>
+        <a th:href="@{/budgets}">Budgets</a>
+        <a th:href="@{/payment-methods}">Payment Methods</a>
+        <a th:href="@{/transactions}">Transactions</a>
+        <a th:href="@{/users}" sec:authorize="hasRole('ADMIN')">Users (Admin)</a>
+    </div>
+    <div class="nav-right">
+        <span sec:authentication="name">user</span>
+        <form th:action="@{/logout}" method="post">
+            <button class="logout" type="submit">Log out</button>
+        </form>
+    </div>
+</nav>
+
+<main>
+    <h1>Welcome, <span th:text="${user?.name} ?: 'there'">User</span></h1>
+
+    <div class="cards">
+        <div class="card">
+            <h3>Monthly Income</h3>
+            <div class="value blue" th:text="${#numbers.formatDecimal(user?.monthlyIncome ?: 0, 1, 2)} + ' RON'">0.00 RON</div>
+        </div>
+        <div class="card">
+            <h3>Total Monthly Spend</h3>
+            <div class="value orange" th:text="${#numbers.formatDecimal(totalMonthlySpend ?: 0, 1, 2)} + ' RON'">0.00 RON</div>
+        </div>
+        <div class="card">
+            <h3>Disposable Income</h3>
+            <div class="value green" th:text="${#numbers.formatDecimal(disposableIncome ?: 0, 1, 2)} + ' RON'">0.00 RON</div>
+        </div>
+        <div class="card">
+            <h3>Upcoming Renewals</h3>
+            <div class="value" th:text="${#lists.size(upcomingRenewals ?: {})}">0</div>
+        </div>
+    </div>
+
+    <h2 style="margin-bottom:.75rem; font-size:1.1rem;">Upcoming Renewals (next 30 days)</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Billing</th>
+            <th>Renewal Date</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:if="${#lists.isEmpty(upcomingRenewals ?: {})}">
+            <td colspan="4" class="empty">No upcoming renewals.</td>
+        </tr>
+        <tr th:each="sub : ${upcomingRenewals}">
+            <td th:text="${sub.name}">Netflix</td>
+            <td th:text="${#numbers.formatDecimal(sub.price, 1, 2)} + ' RON'">9.99 RON</td>
+            <td>
+                <span class="badge badge-blue" th:text="${sub.billingFrequency}">MONTHLY</span>
+            </td>
+            <td th:text="${#temporals.format(sub.renewalDate, 'dd MMM yyyy')}">01 Jun 2026</td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>
