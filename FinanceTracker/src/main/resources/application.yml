@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: Personal Finance & Subscription Tracker
+  profiles:
+    active: dev
+  jpa:
+    show-sql: true
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+  thymeleaf:
+    check-template-location: false
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+
+logging:
+  level:
+    web: debug
+    sql: debug
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
