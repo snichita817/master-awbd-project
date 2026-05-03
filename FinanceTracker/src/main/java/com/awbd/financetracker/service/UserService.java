@@ -10,6 +10,8 @@ public interface UserService {
 
     User createUser(String name, String email, BigDecimal monthlyIncome);
 
+    User registerUser(String name, String email, String rawPassword, BigDecimal monthlyIncome);
+
     Optional<User> getUserById(Long id);
 
     Optional<User> getUserByEmail(String email);
