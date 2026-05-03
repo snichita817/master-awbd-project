@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::main})}" lang="en">
+<head>
+    <title th:text="${budget.id == null ? 'New Budget' : 'Edit Budget'} + ' – Finance Tracker'">Budget – Finance Tracker</title>
+</head>
+<body>
+<main>
+    <h1 th:text="${budget.id == null ? 'New Budget' : 'Edit Budget'}">Budget</h1>
+
+    <div class="card">
+        <form th:action="${formAction}" th:object="${budget}" method="post" novalidate>
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+            <!-- Category selector (create only) -->
+            <div th:if="${budget.id == null}" class="form-group">
+                <label for="categoryId">Category <span style="color:#e53e3e;">*</span></label>
+                <select id="categoryId" name="categoryId" required>
+                    <option value="">— select a category —</option>
+                    <option th:each="cat : ${categories}"
+                            th:value="${cat.id}"
+                            th:text="${cat.name}"
+                            th:selected="${selectedCategoryId != null and selectedCategoryId == cat.id}">
+                    </option>
+                </select>
+            </div>
+
+            <!-- Category display (edit only) -->
+            <div th:unless="${budget.id == null}" class="form-group">
+                <label>Category</label>
+                <input type="text" th:value="${budget.category != null ? budget.category.name : '—'}" readonly
+                       style="background:#f7fafc;cursor:not-allowed;"/>
+            </div>
+
+            <div class="form-group">
+                <label for="maxLimit">Max Limit (RON) <span style="color:#e53e3e;">*</span></label>
+                <input type="number" id="maxLimit" th:field="*{maxLimit}"
+                       placeholder="e.g. 500.00"
+                       required min="0.01" step="0.01"/>
+                <div class="error-msg" th:if="${#fields.hasErrors('maxLimit')}" th:errors="*{maxLimit}"></div>
+            </div>
+
+            <div th:unless="${budget.id == null}" class="form-group">
+                <label>Current Spending (RON)</label>
+                <input type="text" th:value="${#numbers.formatDecimal(budget.currentSpending ?: 0, 1, 2)}" readonly
+                       style="background:#f7fafc;cursor:not-allowed;"/>
+            </div>
+
+            <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger" style="margin-bottom:1rem;">
+                <span th:each="err : ${#fields.allErrors()}" th:text="${err}"></span>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a th:href="@{/budgets}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</main>
+</body>
+</html>

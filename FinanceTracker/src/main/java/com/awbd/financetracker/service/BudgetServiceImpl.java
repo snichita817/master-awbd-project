@@ -54,7 +54,7 @@ public class BudgetServiceImpl implements BudgetService {
     @Override
     @Transactional(readOnly = true)
     public Optional<Budget> getBudgetById(Long id) {
-        return budgetRepository.findById(id);
+        return budgetRepository.findByIdWithCategory(id);
     }
 
     @Override

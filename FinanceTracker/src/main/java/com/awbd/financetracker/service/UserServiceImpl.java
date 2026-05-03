@@ -2,6 +2,7 @@ package com.awbd.financetracker.service;
 
 import com.awbd.financetracker.entity.User;
 import com.awbd.financetracker.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,9 +15,11 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -25,6 +28,7 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("User with email " + email + " already exists");
         }
         User user = new User(name, email, monthlyIncome);
+        user.setPassword(passwordEncoder.encode("ChangeMe123!"));
         return userRepository.save(user);
     }
 

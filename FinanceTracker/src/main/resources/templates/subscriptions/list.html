@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::main})}" lang="en">
+<head>
+    <title>Subscriptions – Finance Tracker</title>
+</head>
+<body>
+<main>
+    <div class="page-header">
+        <h1>Subscriptions</h1>
+        <a th:href="@{/subscriptions/new}" class="btn btn-primary">+ New Subscription</a>
+    </div>
+
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+    <div th:if="${#lists.isEmpty(subscriptions)}" style="background:#fff;border-radius:8px;padding:2rem;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.08);color:#718096;">
+        No subscriptions yet. <a th:href="@{/subscriptions/new}">Add your first one.</a>
+    </div>
+
+    <table th:unless="${#lists.isEmpty(subscriptions)}">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Price (RON)</th>
+                <th>Billing</th>
+                <th>Renewal Date</th>
+                <th>Payment Method</th>
+                <th style="width:160px;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="sub : ${subscriptions}">
+                <td th:text="${sub.name}"></td>
+                <td th:text="${sub.category != null ? sub.category.name : '—'}"></td>
+                <td th:text="${#numbers.formatDecimal(sub.price, 1, 2)}"></td>
+                <td><span class="badge badge-blue" th:text="${sub.billingFrequency}"></span></td>
+                <td th:text="${#temporals.format(sub.renewalDate, 'dd MMM yyyy')}"></td>
+                <td th:text="${sub.paymentMethod != null ? sub.paymentMethod.type : '—'}"></td>
+                <td>
+                    <a th:href="@{/subscriptions/{id}/edit(id=${sub.id})}" class="btn btn-secondary btn-sm">Edit</a>
+                    <form th:action="@{/subscriptions/{id}/delete(id=${sub.id})}" method="post" style="display:inline;"
+                          onsubmit="return confirm('Delete this subscription?');">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

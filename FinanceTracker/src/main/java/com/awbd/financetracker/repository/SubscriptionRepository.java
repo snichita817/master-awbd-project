@@ -12,7 +12,8 @@ import java.util.List;
 @Repository
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
 
-    List<Subscription> findByUserId(Long userId);
+    @Query("SELECT s FROM Subscription s LEFT JOIN FETCH s.category LEFT JOIN FETCH s.paymentMethod WHERE s.user.id = :userId")
+    List<Subscription> findByUserId(@Param("userId") Long userId);
 
     List<Subscription> findByCategoryId(Long categoryId);
 
@@ -25,11 +26,11 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
             @Param("endDate") LocalDate endDate
     );
 
-    // Find subscriptions due within the next 7 days for a user
+    // Find subscriptions due within the next 30 days for a user
     default List<Subscription> findUpcomingRenewals(Long userId) {
         LocalDate today = LocalDate.now();
-        LocalDate sevenDaysFromNow = today.plusDays(7);
-        return findByUserIdAndRenewalDateBetween(userId, today, sevenDaysFromNow);
+        LocalDate thirtyDaysFromNow = today.plusDays(30);
+        return findByUserIdAndRenewalDateBetween(userId, today, thirtyDaysFromNow);
     }
 
     // Find all subscriptions due within the next 7 days (all users)

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::main})}" lang="en">
+<head>
+    <title>Transactions – Finance Tracker</title>
+</head>
+<body>
+<main>
+    <div class="page-header">
+        <h1>Transactions</h1>
+        <a th:href="@{/transactions/new}" class="btn btn-primary">+ Record Transaction</a>
+    </div>
+
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+    <div th:if="${#lists.isEmpty(transactions)}" style="background:#fff;border-radius:8px;padding:2rem;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.08);color:#718096;">
+        No transactions yet. <a th:href="@{/transactions/new}">Record your first one.</a>
+    </div>
+
+    <table th:unless="${#lists.isEmpty(transactions)}">
+        <thead>
+            <tr>
+                <th>Subscription</th>
+                <th>Amount (RON)</th>
+                <th>Date</th>
+                <th style="width:100px;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="tx : ${transactions}">
+                <td th:text="${tx.subscription != null ? tx.subscription.name : '—'}"></td>
+                <td th:text="${#numbers.formatDecimal(tx.amount, 1, 2)}"></td>
+                <td th:text="${#temporals.format(tx.transactionDate, 'dd MMM yyyy HH:mm')}"></td>
+                <td>
+                    <form th:action="@{/transactions/{id}/delete(id=${tx.id})}" method="post" style="display:inline;"
+                          onsubmit="return confirm('Delete this transaction?');">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

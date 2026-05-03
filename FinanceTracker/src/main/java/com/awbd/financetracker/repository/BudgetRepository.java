@@ -14,7 +14,10 @@ public interface BudgetRepository extends JpaRepository<Budget, Long> {
 
     Optional<Budget> findByCategoryId(Long categoryId);
 
-    @Query("SELECT b FROM Budget b WHERE b.category.user.id = :userId")
+    @Query("SELECT b FROM Budget b JOIN FETCH b.category WHERE b.id = :id")
+    Optional<Budget> findByIdWithCategory(@Param("id") Long id);
+
+    @Query("SELECT b FROM Budget b JOIN FETCH b.category WHERE b.category.user.id = :userId")
     List<Budget> findByUserId(@Param("userId") Long userId);
 
     @Query("SELECT b FROM Budget b WHERE b.currentSpending > b.maxLimit")

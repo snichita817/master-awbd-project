@@ -14,7 +14,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 
     List<Transaction> findBySubscriptionId(Long subscriptionId);
 
-    @Query("SELECT t FROM Transaction t WHERE t.subscription.user.id = :userId")
+    @Query("SELECT t FROM Transaction t JOIN FETCH t.subscription WHERE t.subscription.user.id = :userId")
     List<Transaction> findByUserId(@Param("userId") Long userId);
 
     @Query("SELECT t FROM Transaction t WHERE t.subscription.user.id = :userId " +

@@ -14,6 +14,8 @@ public interface TransactionService {
 
     List<Transaction> getTransactionsBySubscriptionId(Long subscriptionId);
 
+    List<Transaction> getTransactionsByUserId(Long userId);
+
     void deleteTransaction(Long id);
 }
 
