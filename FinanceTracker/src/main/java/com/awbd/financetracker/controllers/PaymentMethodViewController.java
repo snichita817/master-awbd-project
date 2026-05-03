@@ -1,6 +1,7 @@
 package com.awbd.financetracker.controllers;
 
 import com.awbd.financetracker.entity.PaymentMethod;
+import com.awbd.financetracker.exception.ResourceNotFoundException;
 import com.awbd.financetracker.enums.PaymentType;
 import com.awbd.financetracker.service.PaymentMethodService;
 import com.awbd.financetracker.service.UserService;
@@ -63,7 +64,7 @@ public class PaymentMethodViewController {
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long id, Model model) {
         PaymentMethod pm = paymentMethodService.getPaymentMethodById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Payment method not found: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Payment method not found: " + id));
         model.addAttribute("paymentMethod", pm);
         model.addAttribute("paymentTypes", PaymentType.values());
         model.addAttribute("formAction", "/payment-methods/" + id);

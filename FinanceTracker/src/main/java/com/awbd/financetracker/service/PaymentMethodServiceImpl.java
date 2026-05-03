@@ -1,6 +1,7 @@
 package com.awbd.financetracker.service;
 
 import com.awbd.financetracker.entity.PaymentMethod;
+import com.awbd.financetracker.exception.ResourceNotFoundException;
 import com.awbd.financetracker.enums.PaymentType;
 import com.awbd.financetracker.repository.PaymentMethodRepository;
 import com.awbd.financetracker.repository.UserRepository;
@@ -26,7 +27,7 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
     @Override
     public PaymentMethod createPaymentMethod(Long userId, PaymentMethod paymentMethod) {
         var user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
         paymentMethod.setUser(user);
         return paymentMethodRepository.save(paymentMethod);
@@ -59,7 +60,7 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
     @Override
     public PaymentMethod updatePaymentMethod(Long id, PaymentMethod updatedPaymentMethod) {
         PaymentMethod existing = paymentMethodRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Payment method not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Payment method not found with id: " + id));
 
         existing.setType(updatedPaymentMethod.getType());
         existing.setDetails(updatedPaymentMethod.getDetails());
@@ -70,7 +71,7 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
     @Override
     public void deletePaymentMethod(Long id) {
         PaymentMethod paymentMethod = paymentMethodRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Payment method not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Payment method not found with id: " + id));
 
         // Remove payment method reference from all subscriptions before deleting
         for (var subscription : paymentMethod.getSubscriptions()) {

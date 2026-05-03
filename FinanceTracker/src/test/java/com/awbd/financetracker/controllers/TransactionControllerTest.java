@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -19,6 +20,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -26,6 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(TransactionController.class)
 @WithMockUser
+@ActiveProfiles("test")
 class TransactionControllerTest {
 
     @Autowired
@@ -55,7 +59,8 @@ class TransactionControllerTest {
         when(transactionService.createTransaction(eq(1L), any(LocalDateTime.class)))
                 .thenReturn(transaction);
 
-        mockMvc.perform(post("/api/transactions/subscription/{subscriptionId}", 1L))
+        mockMvc.perform(post("/api/transactions/subscription/{subscriptionId}", 1L)
+                        .with(csrf()))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.amount").value(9.99));
@@ -80,7 +85,8 @@ class TransactionControllerTest {
     void getTransactionById_WhenNotExists_ShouldReturn404() throws Exception {
         when(transactionService.getTransactionById(99L)).thenReturn(java.util.Optional.empty());
 
-        mockMvc.perform(get("/api/transactions/{id}", 99L))
+        mockMvc.perform(get("/api/transactions/{id}", 99L)
+                        .accept(APPLICATION_JSON))
                 .andExpect(status().isNotFound());
 
         verify(transactionService).getTransactionById(99L);
@@ -88,7 +94,8 @@ class TransactionControllerTest {
 
     @Test
     void deleteTransaction_ShouldReturnNoContent() throws Exception {
-        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete("/api/transactions/{id}", 1L))
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete("/api/transactions/{id}", 1L)
+                        .with(csrf()))
                 .andExpect(status().isNoContent());
 
         verify(transactionService).deleteTransaction(1L);

@@ -1,6 +1,7 @@
 package com.awbd.financetracker.controllers;
 
 import com.awbd.financetracker.entity.PaymentMethod;
+import com.awbd.financetracker.exception.ResourceNotFoundException;
 import com.awbd.financetracker.enums.PaymentType;
 import com.awbd.financetracker.service.PaymentMethodService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -49,7 +50,7 @@ public class PaymentMethodController {
     public ResponseEntity<PaymentMethod> getPaymentMethodById(@PathVariable Long id) {
         return paymentMethodService.getPaymentMethodById(id)
                 .map(ResponseEntity::ok)
-                .orElseThrow(() -> new IllegalArgumentException("Payment method not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Payment method not found with id: " + id));
     }
 
     @Operation(summary = "Get all payment methods", description = "Retrieves a list of all payment methods in the system")

@@ -1,6 +1,8 @@
 package com.awbd.financetracker.controllers;
 
 import com.awbd.financetracker.entity.Category;
+import com.awbd.financetracker.exception.DuplicateResourceException;
+import com.awbd.financetracker.exception.ResourceNotFoundException;
 import com.awbd.financetracker.service.CategoryService;
 import com.awbd.financetracker.service.UserService;
 import jakarta.validation.Valid;
@@ -53,7 +55,7 @@ public class CategoryViewController {
         userService.getUserByEmail(principal.getUsername()).ifPresent(user -> {
             try {
                 categoryService.createCategory(user.getId(), category);
-            } catch (IllegalArgumentException ex) {
+            } catch (DuplicateResourceException ex) {
                 result.rejectValue("name", "duplicate", ex.getMessage());
             }
         });
@@ -68,7 +70,7 @@ public class CategoryViewController {
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long id, Model model) {
         Category category = categoryService.getCategoryById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Category not found: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found: " + id));
         model.addAttribute("category", category);
         model.addAttribute("formAction", "/categories/" + id);
         return "categories/form";
@@ -86,7 +88,7 @@ public class CategoryViewController {
         }
         try {
             categoryService.updateCategory(id, category);
-        } catch (IllegalArgumentException ex) {
+        } catch (DuplicateResourceException ex) {
             result.rejectValue("name", "duplicate", ex.getMessage());
             model.addAttribute("formAction", "/categories/" + id);
             return "categories/form";

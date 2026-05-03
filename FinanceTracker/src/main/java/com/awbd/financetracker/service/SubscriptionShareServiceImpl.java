@@ -4,6 +4,8 @@ import com.awbd.financetracker.entity.Subscription;
 import com.awbd.financetracker.entity.SubscriptionShare;
 import com.awbd.financetracker.entity.SubscriptionShareId;
 import com.awbd.financetracker.entity.User;
+import com.awbd.financetracker.exception.DuplicateResourceException;
+import com.awbd.financetracker.exception.ResourceNotFoundException;
 import com.awbd.financetracker.repository.SubscriptionRepository;
 import com.awbd.financetracker.repository.SubscriptionShareRepository;
 import com.awbd.financetracker.repository.UserRepository;
@@ -35,13 +37,13 @@ public class SubscriptionShareServiceImpl implements SubscriptionShareService {
                                          BigDecimal percentageShare, BigDecimal fixedAmount) {
         SubscriptionShareId shareId = new SubscriptionShareId(subscriptionId, userId);
         if (subscriptionShareRepository.existsById(shareId)) {
-            throw new IllegalStateException("Share already exists for subscription " + subscriptionId
+            throw new DuplicateResourceException("Share already exists for subscription " + subscriptionId
                     + " and user " + userId);
         }
         Subscription subscription = subscriptionRepository.findById(subscriptionId)
-                .orElseThrow(() -> new IllegalArgumentException("Subscription not found with id: " + subscriptionId));
+                .orElseThrow(() -> new ResourceNotFoundException("Subscription not found with id: " + subscriptionId));
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
         SubscriptionShare share = new SubscriptionShare(subscription, user, percentageShare, fixedAmount);
         return subscriptionShareRepository.save(share);
@@ -70,7 +72,7 @@ public class SubscriptionShareServiceImpl implements SubscriptionShareService {
                                           BigDecimal percentageShare, BigDecimal fixedAmount) {
         SubscriptionShare share = subscriptionShareRepository
                 .findById(new SubscriptionShareId(subscriptionId, userId))
-                .orElseThrow(() -> new IllegalArgumentException(
+                .orElseThrow(() -> new ResourceNotFoundException(
                         "Share not found for subscription " + subscriptionId + " and user " + userId));
         share.setPercentageShare(percentageShare);
         share.setFixedAmount(fixedAmount);
@@ -81,7 +83,7 @@ public class SubscriptionShareServiceImpl implements SubscriptionShareService {
     public void removeShare(Long subscriptionId, Long userId) {
         SubscriptionShareId shareId = new SubscriptionShareId(subscriptionId, userId);
         if (!subscriptionShareRepository.existsById(shareId)) {
-            throw new IllegalArgumentException(
+            throw new ResourceNotFoundException(
                     "Share not found for subscription " + subscriptionId + " and user " + userId);
         }
         subscriptionShareRepository.deleteById(shareId);

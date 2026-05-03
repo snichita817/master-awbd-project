@@ -1,6 +1,7 @@
 package com.awbd.financetracker.controllers;
 
 import com.awbd.financetracker.entity.Transaction;
+import com.awbd.financetracker.exception.ResourceNotFoundException;
 import com.awbd.financetracker.service.TransactionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -51,7 +52,7 @@ public class TransactionController {
     public ResponseEntity<Transaction> getTransactionById(@PathVariable Long id) {
         return transactionService.getTransactionById(id)
                 .map(ResponseEntity::ok)
-                .orElseThrow(() -> new IllegalArgumentException("Transaction not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Transaction not found with id: " + id));
     }
 
     @Operation(summary = "Get transactions by subscription", description = "Retrieves all transactions for a specific subscription")

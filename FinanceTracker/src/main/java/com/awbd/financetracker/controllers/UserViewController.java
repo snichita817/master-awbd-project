@@ -1,6 +1,8 @@
 package com.awbd.financetracker.controllers;
 
 import com.awbd.financetracker.entity.User;
+import com.awbd.financetracker.exception.DuplicateResourceException;
+import com.awbd.financetracker.exception.ResourceNotFoundException;
 import com.awbd.financetracker.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -43,7 +45,7 @@ public class UserViewController {
         }
         try {
             userService.createUser(user.getName(), user.getEmail(), user.getMonthlyIncome());
-        } catch (IllegalArgumentException ex) {
+        } catch (DuplicateResourceException ex) {
             result.rejectValue("email", "duplicate", ex.getMessage());
             model.addAttribute("formAction", "/users");
             return "users/form";
@@ -55,7 +57,7 @@ public class UserViewController {
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long id, Model model) {
         User user = userService.getUserById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + id));
         model.addAttribute("user", user);
         model.addAttribute("formAction", "/users/" + id);
         return "users/form";
@@ -73,7 +75,7 @@ public class UserViewController {
         }
         try {
             userService.updateUser(id, user.getName(), user.getEmail(), user.getMonthlyIncome());
-        } catch (IllegalArgumentException ex) {
+        } catch (DuplicateResourceException ex) {
             result.rejectValue("email", "duplicate", ex.getMessage());
             model.addAttribute("formAction", "/users/" + id);
             return "users/form";

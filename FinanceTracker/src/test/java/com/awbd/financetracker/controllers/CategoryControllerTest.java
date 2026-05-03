@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -17,6 +18,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -27,6 +29,7 @@ import java.util.Optional;
 
 @WebMvcTest(CategoryController.class)
 @WithMockUser
+@ActiveProfiles("test")
 class CategoryControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -55,6 +58,7 @@ class CategoryControllerTest {
                 .thenReturn(category);
 
         mockMvc.perform(post("/api/categories/user/{userId}", 1L)
+                        .with(csrf())
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(category)))
                 .andExpect(status().isCreated())
@@ -86,6 +90,7 @@ class CategoryControllerTest {
                 .thenReturn(category);
 
         mockMvc.perform(put("/api/categories/{categoryId}", 1L)
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(category)))
                 .andExpect(status().isOk())
@@ -96,7 +101,8 @@ class CategoryControllerTest {
 
     @Test
     void deleteCategory_ShouldReturnNoContent() throws Exception {
-        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete("/api/categories/{categoryId}", 1L))
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete("/api/categories/{categoryId}", 1L)
+                        .with(csrf()))
                 .andExpect(status().isNoContent());
 
         verify(categoryService).deleteCategory(1L);

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -19,12 +20,14 @@ import java.math.BigDecimal;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UserController.class)
 @WithMockUser
+@ActiveProfiles("test")
 class UserControllerTest {
 
     @Autowired
@@ -57,6 +60,7 @@ class UserControllerTest {
                 .thenReturn(testUser);
 
         mockMvc.perform(post("/api/users")
+                    .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(testUser)))
                 .andExpect(status().isCreated())
@@ -71,7 +75,8 @@ class UserControllerTest {
     void getUserById_WhenNotExists_ShouldReturn404() throws Exception {
         when(userService.getUserById(99L)).thenReturn(Optional.empty());
 
-        mockMvc.perform(get("/api/users/99"))
+        mockMvc.perform(get("/api/users/99")
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
 
         Mockito.verify(userService).getUserById(99L);
@@ -82,6 +87,7 @@ class UserControllerTest {
         testUser.setEmail("invalid-email");
 
         mockMvc.perform(put("/api/users/1")
+                    .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(testUser)))
                 .andExpect(status().isBadRequest());
@@ -94,6 +100,7 @@ class UserControllerTest {
         testUser.setMonthlyIncome(new BigDecimal("-1000.00"));
 
         mockMvc.perform(post("/api/users")
+                    .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(testUser)))
                 .andExpect(status().isBadRequest());
@@ -105,7 +112,8 @@ class UserControllerTest {
     void deleteUser_ShouldReturnNoContent() throws Exception {
         doNothing().when(userService).deleteUser(1L);
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/users/1"))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/users/1")
+                        .with(csrf()))
                 .andExpect(status().isNoContent());
 
         verify(userService).deleteUser(1L);

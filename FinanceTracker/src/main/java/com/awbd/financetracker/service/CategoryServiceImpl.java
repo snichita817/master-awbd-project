@@ -1,6 +1,8 @@
 package com.awbd.financetracker.service;
 
 import com.awbd.financetracker.entity.Category;
+import com.awbd.financetracker.exception.DuplicateResourceException;
+import com.awbd.financetracker.exception.ResourceNotFoundException;
 import com.awbd.financetracker.repository.CategoryRepository;
 import com.awbd.financetracker.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -25,10 +27,10 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category createCategory(Long userId, Category category) {
         var user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
         if (categoryRepository.existsByNameAndUserId(category.getName(), userId)) {
-            throw new IllegalArgumentException("Category with name '" + category.getName() + "' already exists for this user");
+            throw new DuplicateResourceException("Category with name '" + category.getName() + "' already exists for this user");
         }
 
         category.setUser(user);
@@ -51,7 +53,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional(readOnly = true)
     public List<Category> getCategoriesByUserId(Long userId) {
         if(!userRepository.existsById(userId)) {
-            throw new IllegalArgumentException("User not found with id: " + userId);
+            throw new ResourceNotFoundException("User not found with id: " + userId);
         }
 
         return categoryRepository.findByUserId(userId);
@@ -60,12 +62,12 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category updateCategory(Long id, Category updatedCategory) {
         Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + id));
 
         // Check if name is being changed to one that already exists
         if (!category.getName().equals(updatedCategory.getName()) &&
             categoryRepository.existsByNameAndUserId(updatedCategory.getName(), category.getUser().getId())) {
-            throw new IllegalArgumentException("Category with name '" + updatedCategory.getName() + "' already exists for this user");
+            throw new DuplicateResourceException("Category with name '" + updatedCategory.getName() + "' already exists for this user");
         }
 
         category.setName(updatedCategory.getName());
@@ -77,7 +79,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void deleteCategory(Long id) {
         Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + id));
 
         // Remove category reference from all subscriptions before deleting
         for (var subscription : category.getSubscriptions()) {

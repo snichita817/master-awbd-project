@@ -2,6 +2,7 @@ package com.awbd.financetracker.service;
 
 import com.awbd.financetracker.entity.Subscription;
 import com.awbd.financetracker.entity.Transaction;
+import com.awbd.financetracker.exception.ResourceNotFoundException;
 import com.awbd.financetracker.repository.SubscriptionRepository;
 import com.awbd.financetracker.repository.TransactionRepository;
 import org.springframework.cglib.core.Local;
@@ -28,7 +29,7 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public Transaction createTransaction(Long subscriptionId, LocalDateTime transactionDate) {
         Subscription subscription = subscriptionRepository.findById(subscriptionId)
-                .orElseThrow(() -> new IllegalArgumentException("Subscription not found with id: " + subscriptionId));
+                .orElseThrow(() -> new ResourceNotFoundException("Subscription not found with id: " + subscriptionId));
 
         Transaction transaction = new Transaction(subscription.getPrice(), transactionDate, subscription);
 
@@ -49,7 +50,7 @@ public class TransactionServiceImpl implements TransactionService {
     @Transactional(readOnly = true)
     public List<Transaction> getTransactionsBySubscriptionId(Long subscriptionId) {
         if (!subscriptionRepository.existsById(subscriptionId)){
-            throw new IllegalArgumentException("Subscription not found with id: " + subscriptionId);
+            throw new ResourceNotFoundException("Subscription not found with id: " + subscriptionId);
         }
 
         return transactionRepository.findBySubscriptionId(subscriptionId);
@@ -64,7 +65,7 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public void deleteTransaction(Long id) {
         Transaction transaction = transactionRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Transaction not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Transaction not found with id: " + id));
 
         transactionRepository.delete(transaction);
     }

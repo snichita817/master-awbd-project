@@ -1,6 +1,7 @@
 package com.awbd.financetracker.controllers;
 
 import com.awbd.financetracker.entity.Subscription;
+import com.awbd.financetracker.exception.ResourceNotFoundException;
 import com.awbd.financetracker.enums.BillingFrequency;
 import com.awbd.financetracker.service.CategoryService;
 import com.awbd.financetracker.service.PaymentMethodService;
@@ -75,7 +76,7 @@ public class SubscriptionViewController {
         try {
             userService.getUserByEmail(principal.getUsername()).ifPresent(user ->
                 subscriptionService.createSubscription(user.getId(), categoryId, paymentMethodId, subscription));
-        } catch (IllegalArgumentException ex) {
+        } catch (ResourceNotFoundException ex) {
             result.reject("error", ex.getMessage());
             userService.getUserByEmail(principal.getUsername()).ifPresent(user -> {
                 model.addAttribute("categories", categoryService.getCategoriesByUserId(user.getId()));
@@ -96,7 +97,7 @@ public class SubscriptionViewController {
                            @AuthenticationPrincipal UserDetails principal,
                            Model model) {
         Subscription subscription = subscriptionService.getSubscriptionById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Subscription not found: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Subscription not found: " + id));
         userService.getUserByEmail(principal.getUsername()).ifPresent(user -> {
             model.addAttribute("categories", categoryService.getCategoriesByUserId(user.getId()));
             model.addAttribute("paymentMethods", paymentMethodService.getPaymentMethodsByUserId(user.getId()));
@@ -131,7 +132,7 @@ public class SubscriptionViewController {
         }
         try {
             subscriptionService.updateSubscription(id, categoryId, paymentMethodId, subscription);
-        } catch (IllegalArgumentException ex) {
+        } catch (ResourceNotFoundException ex) {
             result.reject("error", ex.getMessage());
             userService.getUserByEmail(principal.getUsername()).ifPresent(user -> {
                 model.addAttribute("categories", categoryService.getCategoriesByUserId(user.getId()));

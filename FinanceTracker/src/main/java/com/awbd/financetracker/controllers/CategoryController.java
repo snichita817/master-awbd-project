@@ -1,6 +1,7 @@
 package com.awbd.financetracker.controllers;
 
 import com.awbd.financetracker.entity.Category;
+import com.awbd.financetracker.exception.ResourceNotFoundException;
 import com.awbd.financetracker.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -49,7 +50,7 @@ public class CategoryController {
             @Parameter(description = "Category ID") @PathVariable Long id) {
         return categoryService.getCategoryById(id)
                 .map(ResponseEntity::ok)
-                .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + id));
     }
 
     @Operation(summary = "Get all categories", description = "Retrieves a list of all categories in the system")

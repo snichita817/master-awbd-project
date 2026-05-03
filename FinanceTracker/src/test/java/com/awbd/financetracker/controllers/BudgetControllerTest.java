@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -21,12 +22,14 @@ import java.util.Optional;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(BudgetController.class)
 @WithMockUser
+@ActiveProfiles("test")
 class BudgetControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -60,6 +63,7 @@ class BudgetControllerTest {
         requestBudget.setCurrentSpending(new BigDecimal("150.00"));
 
         mockMvc.perform(post("/api/budgets/category/{categoryId}", 1L)
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestBudget)))
                 .andExpect(status().isCreated())
@@ -91,6 +95,7 @@ class BudgetControllerTest {
                 .thenReturn(Optional.empty());
 
         mockMvc.perform(get("/api/budgets/{id}", 1L)
+                        .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
 
@@ -136,9 +141,11 @@ class BudgetControllerTest {
                 .thenThrow(new IllegalArgumentException("Current spending cannot be decreased manually."));
 
         mockMvc.perform(put("/api/budgets/{id}", 1L)
+                        .with(csrf())
+                        .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestBudget)))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isBadRequest());
 
         verify(budgetService).updateBudget(eq(1L), any(Budget.class));
     }
@@ -147,7 +154,8 @@ class BudgetControllerTest {
     void deleteBudget_ShouldReturnNoContent() throws Exception {
         doNothing().when(budgetService).deleteBudget(1L);
 
-        mockMvc.perform(delete("/api/budgets/{id}", 1L))
+        mockMvc.perform(delete("/api/budgets/{id}", 1L)
+                        .with(csrf()))
                 .andExpect(status().isNoContent());
 
         verify(budgetService).deleteBudget(1L);

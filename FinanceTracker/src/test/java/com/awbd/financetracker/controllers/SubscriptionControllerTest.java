@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -20,12 +21,14 @@ import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(SubscriptionController.class)
 @WithMockUser
+@ActiveProfiles("test")
 class SubscriptionControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -66,6 +69,7 @@ class SubscriptionControllerTest {
                 .thenReturn(subscription);
 
         mockMvc.perform(post("/api/subscriptions/user/{userId}?categoryId={categoryId}&paymentMethodId={paymentMethodId}", 1L, 1L, 1L)
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(sub)))
                 .andExpect(status().isCreated())
@@ -81,6 +85,7 @@ class SubscriptionControllerTest {
         Subscription sub = new Subscription("Spotify Premium", new BigDecimal("14.99"), null, LocalDate.now(), testUser);
 
         mockMvc.perform(post("/api/subscriptions/user/{userId}", 1L)
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(sub)))
                 .andExpect(status().isBadRequest());

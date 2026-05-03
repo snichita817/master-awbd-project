@@ -1,6 +1,7 @@
 package com.awbd.financetracker.controllers;
 
 import com.awbd.financetracker.entity.Subscription;
+import com.awbd.financetracker.exception.ResourceNotFoundException;
 import com.awbd.financetracker.service.SubscriptionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -50,7 +51,7 @@ public class SubscriptionController {
     public ResponseEntity<Subscription> getSubscriptionById(@PathVariable Long id) {
         return subscriptionService.getSubscriptionById(id)
                 .map(ResponseEntity::ok)
-                .orElseThrow(() -> new IllegalArgumentException("Subscription not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Subscription not found with id: " + id));
     }
 
     @Operation(summary = "Get all subscriptions", description = "Retrieves a list of all subscriptions in the system")

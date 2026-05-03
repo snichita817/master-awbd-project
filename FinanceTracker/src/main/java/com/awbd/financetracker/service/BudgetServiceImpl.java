@@ -3,6 +3,8 @@ package com.awbd.financetracker.service;
 import com.awbd.financetracker.entity.Budget;
 import com.awbd.financetracker.entity.Category;
 import com.awbd.financetracker.enums.BillingFrequency;
+import com.awbd.financetracker.exception.DuplicateResourceException;
+import com.awbd.financetracker.exception.ResourceNotFoundException;
 import com.awbd.financetracker.repository.BudgetRepository;
 import com.awbd.financetracker.repository.CategoryRepository;
 import org.springframework.stereotype.Service;
@@ -29,10 +31,10 @@ public class BudgetServiceImpl implements BudgetService {
     @Override
     public Budget createBudget(Long categoryId, Budget budget) {
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + categoryId));
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + categoryId));
 
         if (category.getBudget() != null) {
-            throw new IllegalArgumentException("Budget already exists for category id: " + categoryId);
+            throw new DuplicateResourceException("Budget already exists for category id: " + categoryId);
         }
 
         budget.setCategory(category);
@@ -78,7 +80,7 @@ public class BudgetServiceImpl implements BudgetService {
     @Override
     public Budget updateBudget(Long id, Budget updatedBudget) {
         Budget budget = budgetRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Budget not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Budget not found with id: " + id));
 
         budget.setMaxLimit(updatedBudget.getMaxLimit());
         if (updatedBudget.getCurrentSpending() != null) {
@@ -94,7 +96,7 @@ public class BudgetServiceImpl implements BudgetService {
     @Override
     public void deleteBudget(Long id) {
         Budget budget = budgetRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Budget not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Budget not found with id: " + id));
 
         budgetRepository.delete(budget);
     }

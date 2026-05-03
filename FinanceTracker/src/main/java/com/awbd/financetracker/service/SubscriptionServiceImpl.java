@@ -3,6 +3,7 @@ package com.awbd.financetracker.service;
 import com.awbd.financetracker.entity.Category;
 import com.awbd.financetracker.entity.Subscription;
 import com.awbd.financetracker.entity.User;
+import com.awbd.financetracker.exception.ResourceNotFoundException;
 import com.awbd.financetracker.repository.CategoryRepository;
 import com.awbd.financetracker.repository.SubscriptionRepository;
 import com.awbd.financetracker.repository.UserRepository;
@@ -35,13 +36,13 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Override
     public Subscription createSubscription(Long userId, Long categoryId, Long paymentMethodId, Subscription subscription) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
         subscription.setUser(user);
 
         if (categoryId != null) {
             var category = categoryRepository.findById(categoryId)
-                    .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + categoryId));
+                    .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + categoryId));
             subscription.setCategory(category);
         }
 
@@ -49,7 +50,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             var paymentMethod = user.getPaymentMethods().stream()
                     .filter(x -> x.getId().equals(paymentMethodId))
                     .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("Payment method not found with id: " + paymentMethodId));
+                    .orElseThrow(() -> new ResourceNotFoundException("Payment method not found with id: " + paymentMethodId));
             subscription.setPaymentMethod(paymentMethod);
         }
 
@@ -77,7 +78,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Transactional(readOnly = true)
     public List<Subscription> getSubscriptionsByUserId(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
         return subscriptionRepository.findByUserId(userId);
     }
@@ -86,7 +87,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Transactional(readOnly = true)
     public List<Subscription> getUpcomingRenewals(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
         return subscriptionRepository.findUpcomingRenewals(userId);
     }
@@ -94,7 +95,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Override
     public Subscription updateSubscription(Long id, Long categoryId, Long paymentMethodId, Subscription updatedSubscription) {
         Subscription existing = subscriptionRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Subscription not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Subscription not found with id: " + id));
 
         // Capture old values for budget adjustment
         Category oldCategory = existing.getCategory();
@@ -111,7 +112,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         Category newCategory = null;
         if (categoryId != null) {
             newCategory = categoryRepository.findById(categoryId)
-                    .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + categoryId));
+                    .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + categoryId));
             existing.setCategory(newCategory);
         } else {
             existing.setCategory(null);
@@ -122,7 +123,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             var paymentMethod = existing.getUser().getPaymentMethods().stream()
                     .filter(x -> x.getId().equals(paymentMethodId))
                     .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("Payment method not found with id: " + paymentMethodId));
+                    .orElseThrow(() -> new ResourceNotFoundException("Payment method not found with id: " + paymentMethodId));
             existing.setPaymentMethod(paymentMethod);
         }
 
@@ -138,7 +139,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Override
     public void deleteSubscription(Long id) {
         Subscription subscription = subscriptionRepository.findById(id)
-                        .orElseThrow(() -> new IllegalArgumentException("Subscription not found with id: " + id));
+                        .orElseThrow(() -> new ResourceNotFoundException("Subscription not found with id: " + id));
 
         // Remove from budget BEFORE deleting
         budgetService.removeSubscriptionFromBudget(

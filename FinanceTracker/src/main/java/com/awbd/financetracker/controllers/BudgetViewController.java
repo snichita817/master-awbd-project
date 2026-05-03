@@ -1,6 +1,8 @@
 package com.awbd.financetracker.controllers;
 
 import com.awbd.financetracker.entity.Budget;
+import com.awbd.financetracker.exception.DuplicateResourceException;
+import com.awbd.financetracker.exception.ResourceNotFoundException;
 import com.awbd.financetracker.service.BudgetService;
 import com.awbd.financetracker.service.CategoryService;
 import com.awbd.financetracker.service.UserService;
@@ -63,7 +65,7 @@ public class BudgetViewController {
         }
         try {
             budgetService.createBudget(categoryId, budget);
-        } catch (IllegalArgumentException ex) {
+        } catch (DuplicateResourceException | ResourceNotFoundException ex) {
             result.reject("error", ex.getMessage());
             userService.getUserByEmail(principal.getUsername()).ifPresent(user ->
                 model.addAttribute("categories", categoryService.getCategoriesByUserId(user.getId())));
@@ -78,7 +80,7 @@ public class BudgetViewController {
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long id, Model model) {
         Budget budget = budgetService.getBudgetById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Budget not found: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Budget not found: " + id));
         model.addAttribute("budget", budget);
         model.addAttribute("formAction", "/budgets/" + id);
         return "budgets/form";
@@ -96,7 +98,7 @@ public class BudgetViewController {
         }
         try {
             budgetService.updateBudget(id, budget);
-        } catch (IllegalArgumentException ex) {
+        } catch (ResourceNotFoundException ex) {
             result.reject("error", ex.getMessage());
             model.addAttribute("formAction", "/budgets/" + id);
             return "budgets/form";

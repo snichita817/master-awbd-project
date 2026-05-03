@@ -1,5 +1,6 @@
 package com.awbd.financetracker.controllers;
 
+import com.awbd.financetracker.exception.ResourceNotFoundException;
 import com.awbd.financetracker.service.SubscriptionService;
 import com.awbd.financetracker.service.TransactionService;
 import com.awbd.financetracker.service.UserService;
@@ -61,7 +62,7 @@ public class TransactionViewController {
         }
         try {
             transactionService.createTransaction(subscriptionId, dateTime);
-        } catch (IllegalArgumentException ex) {
+        } catch (ResourceNotFoundException ex) {
             userService.getUserByEmail(principal.getUsername()).ifPresent(user ->
                 model.addAttribute("subscriptions", subscriptionService.getSubscriptionsByUserId(user.getId())));
             model.addAttribute("errorMessage", ex.getMessage());

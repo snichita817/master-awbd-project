@@ -1,6 +1,7 @@
 package com.awbd.financetracker.controllers;
 
 import com.awbd.financetracker.entity.Budget;
+import com.awbd.financetracker.exception.ResourceNotFoundException;
 import com.awbd.financetracker.service.BudgetService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -49,7 +50,7 @@ public class BudgetController {
             @Parameter(description = "Budget ID") @PathVariable Long id) {
         return budgetService.getBudgetById(id)
                 .map(ResponseEntity::ok)
-                .orElseThrow(() -> new IllegalArgumentException("Budget not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Budget not found with id: " + id));
     }
 
     @Operation(summary = "Get all budgets of the family", description = "Retrieves a list of all budgets in the system")
@@ -69,7 +70,7 @@ public class BudgetController {
     public ResponseEntity<Budget> getBudgetByCategoryId(@PathVariable Long categoryId) {
         return budgetService.getBudgetByCategoryId(categoryId)
                 .map(ResponseEntity::ok)
-                .orElseThrow(() -> new IllegalArgumentException("Budget not found for category id: " + categoryId));
+                .orElseThrow(() -> new ResourceNotFoundException("Budget not found for category id: " + categoryId));
     }
 
     @Operation(summary = "Get all budgets for a user", description = "Retrieves all budgets across all categories for a specific user")

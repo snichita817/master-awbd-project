@@ -3,6 +3,7 @@ package com.awbd.financetracker.service;
 import com.awbd.financetracker.entity.Subscription;
 import com.awbd.financetracker.entity.User;
 import com.awbd.financetracker.enums.BillingFrequency;
+import com.awbd.financetracker.exception.ResourceNotFoundException;
 import com.awbd.financetracker.repository.SubscriptionRepository;
 import com.awbd.financetracker.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,7 @@ public class FinanceServiceImpl implements FinanceService {
     @Override
     public BigDecimal calculateDisposableIncome(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
         BigDecimal monthlyIncome = user.getMonthlyIncome();
         BigDecimal totalMonthlySubscriptionCost = calculateTotalMonthlySubscriptionCost(userId);

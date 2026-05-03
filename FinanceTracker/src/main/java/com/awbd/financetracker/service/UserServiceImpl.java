@@ -1,6 +1,8 @@
 package com.awbd.financetracker.service;
 
 import com.awbd.financetracker.entity.User;
+import com.awbd.financetracker.exception.DuplicateResourceException;
+import com.awbd.financetracker.exception.ResourceNotFoundException;
 import com.awbd.financetracker.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,7 +27,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User createUser(String name, String email, BigDecimal monthlyIncome) {
         if (userRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException("User with email " + email + " already exists");
+            throw new DuplicateResourceException("User with email " + email + " already exists");
         }
         User user = new User(name, email, monthlyIncome);
         user.setPassword(passwordEncoder.encode("ChangeMe123!"));
@@ -36,7 +38,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public Optional<User> getUserById(Long id) {
         if(!userRepository.existsById(id)) {
-            throw new IllegalArgumentException("User not found with id: " + id);
+            throw new ResourceNotFoundException("User not found with id: " + id);
         }
 
         return userRepository.findById(id);
@@ -57,10 +59,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public User updateUser(Long id, String name, String email, BigDecimal monthlyIncome) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
 
         if (!user.getEmail().equals(email) && userRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException("User with email " + email + " already exists");
+            throw new DuplicateResourceException("User with email " + email + " already exists");
         }
 
         user.setName(name);
@@ -73,7 +75,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Long id) {
         if (!userRepository.existsById(id)) {
-            throw new IllegalArgumentException("User not found with id: " + id);
+            throw new ResourceNotFoundException("User not found with id: " + id);
         }
         userRepository.deleteById(id);
     }
