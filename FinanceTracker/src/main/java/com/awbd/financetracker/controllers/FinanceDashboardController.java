@@ -26,6 +26,7 @@ public class FinanceDashboardController {
             model.addAttribute("disposableIncome", financeService.calculateDisposableIncome(user.getId()));
             model.addAttribute("totalMonthlySpend", financeService.calculateTotalMonthlySubscriptionCost(user.getId()));
             model.addAttribute("upcomingRenewals", financeService.getUpcomingRenewals(user.getId()));
+            model.addAttribute("spendingByCategory", financeService.getSpendingByCategory(user.getId()));
         });
         return "finance/dashboard";
     }

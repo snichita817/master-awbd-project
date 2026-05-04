@@ -82,10 +82,10 @@ public class SubscriptionShareServiceImpl implements SubscriptionShareService {
     @Override
     public void removeShare(Long subscriptionId, Long userId) {
         SubscriptionShareId shareId = new SubscriptionShareId(subscriptionId, userId);
-        if (!subscriptionShareRepository.existsById(shareId)) {
-            throw new ResourceNotFoundException(
-                    "Share not found for subscription " + subscriptionId + " and user " + userId);
-        }
+        SubscriptionShare share = subscriptionShareRepository.findById(shareId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Share not found for subscription " + subscriptionId + " and user " + userId));
+
         subscriptionShareRepository.deleteById(shareId);
     }
 }

@@ -14,39 +14,113 @@
     <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
     <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
 
-    <div th:if="${#lists.isEmpty(subscriptions)}" style="background:#fff;border-radius:8px;padding:2rem;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.08);color:#718096;">
-        No subscriptions yet. <a th:href="@{/subscriptions/new}">Add your first one.</a>
+    <!-- Filter pills -->
+    <div style="display:flex;gap:.5rem;margin-bottom:1.25rem;flex-wrap:wrap;">
+        <a th:href="@{/subscriptions(filter='all')}"
+           th:class="${filter == 'all'} ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm'">
+            All
+            <span th:text="'(' + ${subscriptions.size() + sharedWithMe.size()} + ')'"
+                  style="margin-left:.25rem;opacity:.8;"></span>
+        </a>
+        <a th:href="@{/subscriptions(filter='mine')}"
+           th:class="${filter == 'mine'} ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm'">
+            Mine
+            <span th:text="'(' + ${subscriptions.size()} + ')'"
+                  style="margin-left:.25rem;opacity:.8;"></span>
+        </a>
+        <a th:href="@{/subscriptions(filter='shared')}"
+           th:class="${filter == 'shared'} ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm'">
+            Shared
+            <span th:text="'(' + ${sharedIds.size()} + ')'"
+                  style="margin-left:.25rem;opacity:.8;"></span>
+        </a>
+        <a th:href="@{/subscriptions(filter='received')}"
+           th:class="${filter == 'received'} ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm'">
+            Shared with me
+            <span th:text="'(' + ${sharedWithMe.size()} + ')'"
+                  style="margin-left:.25rem;opacity:.8;"></span>
+        </a>
     </div>
 
-    <table th:unless="${#lists.isEmpty(subscriptions)}">
+    <!-- Empty state -->
+    <div th:if="${(filter == 'all'      and #lists.isEmpty(subscriptions) and #lists.isEmpty(sharedWithMe)) or
+                  (filter == 'mine'     and #lists.isEmpty(subscriptions)) or
+                  (filter == 'shared'   and sharedIds.isEmpty()) or
+                  (filter == 'received' and #lists.isEmpty(sharedWithMe))}"
+         style="background:#fff;border-radius:8px;padding:2rem;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.08);color:#718096;">
+        <span th:if="${filter == 'all' or filter == 'mine'}">No subscriptions yet. <a th:href="@{/subscriptions/new}">Add your first one.</a></span>
+        <span th:if="${filter == 'shared'}">None of your subscriptions have been shared yet.</span>
+        <span th:if="${filter == 'received'}">No subscriptions have been shared with you yet.</span>
+    </div>
+
+    <!-- Unified table -->
+    <table th:unless="${(filter == 'all'      and #lists.isEmpty(subscriptions) and #lists.isEmpty(sharedWithMe)) or
+                        (filter == 'mine'     and #lists.isEmpty(subscriptions)) or
+                        (filter == 'shared'   and sharedIds.isEmpty()) or
+                        (filter == 'received' and #lists.isEmpty(sharedWithMe))}">
         <thead>
             <tr>
                 <th>Name</th>
+                <th>Source</th>
                 <th>Category</th>
                 <th>Price (RON)</th>
                 <th>Billing</th>
                 <th>Renewal Date</th>
-                <th>Payment Method</th>
-                <th style="width:160px;">Actions</th>
+                <th style="width:180px;">Actions</th>
             </tr>
         </thead>
         <tbody>
-            <tr th:each="sub : ${subscriptions}">
-                <td th:text="${sub.name}"></td>
-                <td th:text="${sub.category != null ? sub.category.name : '—'}"></td>
-                <td th:text="${#numbers.formatDecimal(sub.price, 1, 2)}"></td>
-                <td><span class="badge badge-blue" th:text="${sub.billingFrequency}"></span></td>
-                <td th:text="${#temporals.format(sub.renewalDate, 'dd MMM yyyy')}"></td>
-                <td th:text="${sub.paymentMethod != null ? sub.paymentMethod.type : '—'}"></td>
-                <td>
-                    <a th:href="@{/subscriptions/{id}/edit(id=${sub.id})}" class="btn btn-secondary btn-sm">Edit</a>
-                    <form th:action="@{/subscriptions/{id}/delete(id=${sub.id})}" method="post" style="display:inline;"
-                          onsubmit="return confirm('Delete this subscription?');">
-                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                    </form>
-                </td>
-            </tr>
+            <!-- My subscriptions -->
+            <th:block th:if="${filter == 'all' or filter == 'mine' or filter == 'shared'}">
+                <tr th:each="sub : ${subscriptions}"
+                    th:if="${filter != 'shared' or sharedIds.contains(sub.id)}">
+                    <td>
+                        <span th:text="${sub.name}"></span>
+                        <span th:if="${sharedIds != null and sharedIds.contains(sub.id)}"
+                              class="badge badge-green" style="margin-left:.4rem;font-size:.7rem;">Shared</span>
+                    </td>
+                    <td><span class="badge badge-blue" style="font-size:.7rem;">Mine</span></td>
+                    <td th:text="${sub.category != null ? sub.category.name : '—'}"></td>
+                    <td th:text="${#numbers.formatDecimal(sub.price, 1, 2)}"></td>
+                    <td><span class="badge badge-blue" th:text="${sub.billingFrequency}"></span></td>
+                    <td th:text="${#temporals.format(sub.renewalDate, 'dd MMM yyyy')}"></td>
+                    <td>
+                        <a th:href="@{/subscriptions/{id}/edit(id=${sub.id})}" class="btn btn-secondary btn-sm">Edit</a>
+                        <a th:href="@{/subscriptions/{id}/shares(id=${sub.id})}" class="btn btn-secondary btn-sm">Shares</a>
+                        <form th:action="@{/subscriptions/{id}/delete(id=${sub.id})}" method="post" style="display:inline;"
+                              onsubmit="return confirm('Delete this subscription?');">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            </th:block>
+
+            <!-- Shared with me -->
+            <th:block th:if="${filter == 'all' or filter == 'received'}">
+                <tr th:each="share : ${sharedWithMe}">
+                    <td th:text="${share.subscription.name}"></td>
+                    <td><span class="badge badge-orange" style="font-size:.7rem;">Shared with me</span></td>
+                    <td>
+                        <div th:text="${share.subscription.category != null ? share.subscription.category.name : '—'}"></div>
+                        <div style="font-size:.75rem;color:#718096;"
+                             th:text="'by ' + ${share.subscription.user.name}"></div>
+                    </td>
+                    <td>
+                        <span th:if="${sharedMonthlyAmounts[share.id.subscriptionId] != null}"
+                              th:text="${#numbers.formatDecimal(sharedMonthlyAmounts[share.id.subscriptionId], 1, 2)}"></span>
+                        <span th:if="${sharedMonthlyAmounts[share.id.subscriptionId] == null}">—</span>
+                        <div style="font-size:.75rem;color:#718096;">
+                            <span th:if="${share.percentageShare != null}"
+                                  th:text="${#numbers.formatDecimal(share.percentageShare, 1, 2) + '% of ' + #numbers.formatDecimal(share.subscription.price, 1, 2)}"></span>
+                            <span th:if="${share.percentageShare == null and share.fixedAmount != null}">fixed</span>
+                        </div>
+                    </td>
+                    <td><span class="badge badge-blue" th:text="${share.subscription.billingFrequency}"></span></td>
+                    <td th:text="${#temporals.format(share.subscription.renewalDate, 'dd MMM yyyy')}"></td>
+                    <td style="color:#718096;">—</td>
+                </tr>
+            </th:block>
         </tbody>
     </table>
 </main>

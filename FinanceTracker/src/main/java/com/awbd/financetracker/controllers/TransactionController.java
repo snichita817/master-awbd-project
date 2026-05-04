@@ -65,17 +65,6 @@ public class TransactionController {
         List<Transaction> transactions = transactionService.getTransactionsBySubscriptionId(subscriptionId);
         return ResponseEntity.ok(transactions);
     }
-
-    @Operation(summary = "Delete transaction", description = "Removes a transaction record")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Transaction deleted successfully"),
-            @ApiResponse(responseCode = "404", description = "Transaction not found")
-    })
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTransaction(@PathVariable Long id) {
-        transactionService.deleteTransaction(id);
-        return ResponseEntity.noContent().build();
-    }
 }
 
 

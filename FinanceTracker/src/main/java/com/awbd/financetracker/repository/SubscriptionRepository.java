@@ -26,11 +26,11 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
             @Param("endDate") LocalDate endDate
     );
 
-    // Find subscriptions due within the next 30 days for a user
+    // Find subscriptions due within the next 7 days for a user
     default List<Subscription> findUpcomingRenewals(Long userId) {
         LocalDate today = LocalDate.now();
-        LocalDate thirtyDaysFromNow = today.plusDays(30);
-        return findByUserIdAndRenewalDateBetween(userId, today, thirtyDaysFromNow);
+        LocalDate sevenDaysFromNow = today.plusDays(7);
+        return findByUserIdAndRenewalDateBetween(userId, today, sevenDaysFromNow);
     }
 
     // Find all subscriptions due within the next 7 days (all users)

@@ -1,8 +1,10 @@
 package com.awbd.financetracker.controllers;
 
 import com.awbd.financetracker.entity.Subscription;
+import com.awbd.financetracker.entity.SubscriptionShare;
 import com.awbd.financetracker.exception.ResourceNotFoundException;
 import com.awbd.financetracker.enums.BillingFrequency;
+import com.awbd.financetracker.repository.SubscriptionShareRepository;
 import com.awbd.financetracker.service.CategoryService;
 import com.awbd.financetracker.service.PaymentMethodService;
 import com.awbd.financetracker.service.SubscriptionService;
@@ -16,6 +18,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 @Controller
 @RequestMapping("/subscriptions")
 public class SubscriptionViewController {
@@ -24,21 +32,50 @@ public class SubscriptionViewController {
     private final CategoryService categoryService;
     private final PaymentMethodService paymentMethodService;
     private final UserService userService;
+    private final SubscriptionShareRepository subscriptionShareRepository;
 
     public SubscriptionViewController(SubscriptionService subscriptionService,
                                       CategoryService categoryService,
                                       PaymentMethodService paymentMethodService,
-                                      UserService userService) {
+                                      UserService userService,
+                                      SubscriptionShareRepository subscriptionShareRepository) {
         this.subscriptionService = subscriptionService;
         this.categoryService = categoryService;
         this.paymentMethodService = paymentMethodService;
         this.userService = userService;
+        this.subscriptionShareRepository = subscriptionShareRepository;
     }
 
     @GetMapping
-    public String list(@AuthenticationPrincipal UserDetails principal, Model model) {
-        userService.getUserByEmail(principal.getUsername()).ifPresent(user ->
-            model.addAttribute("subscriptions", subscriptionService.getSubscriptionsByUserId(user.getId())));
+    public String list(@AuthenticationPrincipal UserDetails principal,
+                       @RequestParam(defaultValue = "all") String filter,
+                       Model model) {
+        userService.getUserByEmail(principal.getUsername()).ifPresent(user -> {
+            List<Subscription> subscriptions = subscriptionService.getSubscriptionsByUserId(user.getId());
+            List<SubscriptionShare> sharedWithMe = subscriptionShareRepository.findByIdUserId(user.getId());
+
+            Map<Long, BigDecimal> sharedMonthlyAmounts = new LinkedHashMap<>();
+            for (SubscriptionShare share : sharedWithMe) {
+                Subscription sub = share.getSubscription();
+                BigDecimal monthlyPrice = sub.getBillingFrequency() == BillingFrequency.YEARLY
+                        ? sub.getPrice().divide(BigDecimal.valueOf(12), 2, RoundingMode.HALF_UP)
+                        : sub.getPrice();
+                BigDecimal amount = null;
+                if (share.getPercentageShare() != null && share.getPercentageShare().compareTo(BigDecimal.ZERO) > 0) {
+                    amount = monthlyPrice.multiply(share.getPercentageShare())
+                            .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+                } else if (share.getFixedAmount() != null && share.getFixedAmount().compareTo(BigDecimal.ZERO) > 0) {
+                    amount = share.getFixedAmount();
+                }
+                sharedMonthlyAmounts.put(share.getId().getSubscriptionId(), amount);
+            }
+
+            model.addAttribute("subscriptions", subscriptions);
+            model.addAttribute("sharedIds", subscriptionShareRepository.findSharedSubscriptionIdsByOwnerId(user.getId()));
+            model.addAttribute("sharedWithMe", sharedWithMe);
+            model.addAttribute("sharedMonthlyAmounts", sharedMonthlyAmounts);
+            model.addAttribute("filter", filter);
+        });
         return "subscriptions/list";
     }
 

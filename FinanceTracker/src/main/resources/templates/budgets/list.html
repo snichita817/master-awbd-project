@@ -32,11 +32,11 @@
             <tr th:each="b : ${budgets}">
                 <td th:text="${b.category != null ? b.category.name : '—'}"></td>
                 <td th:text="${#numbers.formatDecimal(b.maxLimit, 1, 2)}"></td>
-                <td th:text="${#numbers.formatDecimal(b.currentSpending ?: 0, 1, 2)}"></td>
+                <td th:text="${#numbers.formatDecimal(spendingByCategory[b.category?.name] ?: 0, 1, 2)}"></td>
                 <td>
-                    <span th:if="${b.currentSpending != null and b.currentSpending.compareTo(b.maxLimit) > 0}"
+                    <span th:if="${spendingByCategory[b.category?.name] != null and spendingByCategory[b.category?.name].compareTo(b.maxLimit) > 0}"
                           class="badge badge-orange">Over Budget</span>
-                    <span th:unless="${b.currentSpending != null and b.currentSpending.compareTo(b.maxLimit) > 0}"
+                    <span th:unless="${spendingByCategory[b.category?.name] != null and spendingByCategory[b.category?.name].compareTo(b.maxLimit) > 0}"
                           class="badge badge-green">OK</span>
                 </td>
                 <td>

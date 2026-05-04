@@ -27,7 +27,7 @@
         </div>
     </div>
 
-    <h2>Upcoming Renewals (next 30 days)</h2>
+    <h2>Upcoming Renewals (next 7 days)</h2>
     <table>
         <thead>
             <tr>
@@ -49,6 +49,25 @@
             </tr>
         </tbody>
     </table>
+
+    <h2>Monthly Spend by Category</h2>
+    <table th:if="${spendingByCategory != null and !spendingByCategory.isEmpty()}">
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Monthly Cost (RON)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="entry : ${spendingByCategory}">
+                <td th:text="${entry.key}">Entertainment</td>
+                <td th:text="${#numbers.formatDecimal(entry.value, 1, 2)}">0.00</td>
+            </tr>
+        </tbody>
+    </table>
+    <div th:unless="${spendingByCategory != null and !spendingByCategory.isEmpty()}" style="background:#fff;border-radius:8px;padding:1.5rem;text-align:center;color:#718096;">
+        No subscriptions yet.
+    </div>
 </main>
 </body>
 </html>

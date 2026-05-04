@@ -71,11 +71,4 @@ public class TransactionViewController {
         redirectAttrs.addFlashAttribute("successMessage", "Transaction recorded successfully.");
         return "redirect:/transactions";
     }
-
-    @PostMapping("/{id}/delete")
-    public String delete(@PathVariable Long id, RedirectAttributes redirectAttrs) {
-        transactionService.deleteTransaction(id);
-        redirectAttrs.addFlashAttribute("successMessage", "Transaction deleted.");
-        return "redirect:/transactions";
-    }
 }

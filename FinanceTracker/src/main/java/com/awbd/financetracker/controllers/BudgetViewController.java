@@ -5,6 +5,7 @@ import com.awbd.financetracker.exception.DuplicateResourceException;
 import com.awbd.financetracker.exception.ResourceNotFoundException;
 import com.awbd.financetracker.service.BudgetService;
 import com.awbd.financetracker.service.CategoryService;
+import com.awbd.financetracker.service.FinanceService;
 import com.awbd.financetracker.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,19 +23,23 @@ public class BudgetViewController {
     private final BudgetService budgetService;
     private final CategoryService categoryService;
     private final UserService userService;
+    private final FinanceService financeService;
 
     public BudgetViewController(BudgetService budgetService,
                                 CategoryService categoryService,
-                                UserService userService) {
+                                UserService userService,
+                                FinanceService financeService) {
         this.budgetService = budgetService;
         this.categoryService = categoryService;
         this.userService = userService;
+        this.financeService = financeService;
     }
 
     @GetMapping
     public String list(@AuthenticationPrincipal UserDetails principal, Model model) {
         userService.getUserByEmail(principal.getUsername()).ifPresent(user -> {
             model.addAttribute("budgets", budgetService.getBudgetsByUserId(user.getId()));
+            model.addAttribute("spendingByCategory", financeService.getSpendingByCategory(user.getId()));
         });
         return "budgets/list";
     }

@@ -91,13 +91,4 @@ class TransactionControllerTest {
 
         verify(transactionService).getTransactionById(99L);
     }
-
-    @Test
-    void deleteTransaction_ShouldReturnNoContent() throws Exception {
-        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete("/api/transactions/{id}", 1L)
-                        .with(csrf()))
-                .andExpect(status().isNoContent());
-
-        verify(transactionService).deleteTransaction(1L);
-    }
 }
