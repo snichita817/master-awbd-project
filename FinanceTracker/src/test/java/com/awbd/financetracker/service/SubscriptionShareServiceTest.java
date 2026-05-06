@@ -38,9 +38,6 @@ class SubscriptionShareServiceTest {
     @Mock
     private UserRepository userRepository;
 
-    @Mock
-    private BudgetService budgetService;
-
     @InjectMocks
     private SubscriptionShareServiceImpl subscriptionShareService;
 
@@ -72,8 +69,6 @@ class SubscriptionShareServiceTest {
         assertThat(result.getPercentageShare()).isEqualByComparingTo("50.00");
         assertThat(result.getFixedAmount()).isNull();
         verify(subscriptionShareRepository).save(any());
-        // subscription has no category, so budgetService should not be called
-        verifyNoInteractions(budgetService);
     }
 
     @Test
@@ -90,7 +85,6 @@ class SubscriptionShareServiceTest {
 
         assertThat(result.getFixedAmount()).isEqualByComparingTo("10.00");
         assertThat(result.getPercentageShare()).isNull();
-        verifyNoInteractions(budgetService);
     }
 
     @Test
@@ -120,7 +114,7 @@ class SubscriptionShareServiceTest {
     @Test
     void removeShare_nonExisting_throwsResourceNotFoundException() {
         SubscriptionShareId shareId = new SubscriptionShareId(100L, 1L);
-        when(subscriptionShareRepository.existsById(shareId)).thenReturn(false);
+        when(subscriptionShareRepository.findById(shareId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> subscriptionShareService.removeShare(100L, 1L))
                 .isInstanceOf(ResourceNotFoundException.class);

@@ -5,6 +5,7 @@ import com.awbd.financetracker.entity.User;
 import com.awbd.financetracker.enums.BillingFrequency;
 import com.awbd.financetracker.exception.ResourceNotFoundException;
 import com.awbd.financetracker.repository.SubscriptionRepository;
+import com.awbd.financetracker.repository.SubscriptionShareRepository;
 import com.awbd.financetracker.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,9 @@ class FinanceServiceTest {
     @Mock
     private SubscriptionRepository subscriptionRepository;
 
+    @Mock
+    private SubscriptionShareRepository subscriptionShareRepository;
+
     @InjectMocks
     private FinanceServiceImpl financeService;
 
@@ -51,6 +55,7 @@ class FinanceServiceTest {
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(subscriptionRepository.findByUserId(1L)).thenReturn(List.of(monthly, yearly));
+        when(subscriptionShareRepository.findBySubscriptionOwnerId(1L)).thenReturn(List.of());
 
         // total monthly = 15.00 + (120.00 / 12) = 15.00 + 10.00 = 25.00
         // disposable = 3000.00 - 25.00 = 2975.00
@@ -63,6 +68,7 @@ class FinanceServiceTest {
     void calculateDisposableIncome_noSubscriptions_returnsFullIncome() {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(subscriptionRepository.findByUserId(1L)).thenReturn(List.of());
+        when(subscriptionShareRepository.findBySubscriptionOwnerId(1L)).thenReturn(List.of());
 
         BigDecimal result = financeService.calculateDisposableIncome(1L);
 
@@ -99,6 +105,7 @@ class FinanceServiceTest {
                 BillingFrequency.YEARLY, LocalDate.now().plusDays(200), user);
 
         when(subscriptionRepository.findByUserId(1L)).thenReturn(List.of(s1, s2));
+        when(subscriptionShareRepository.findBySubscriptionOwnerId(1L)).thenReturn(List.of());
 
         // 10.00 + (24.00 / 12) = 10.00 + 2.00 = 12.00
         BigDecimal result = financeService.calculateTotalMonthlySubscriptionCost(1L);
