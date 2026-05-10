@@ -18,7 +18,7 @@ import java.time.LocalDate;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * IT2: Create subscriptions → call FinanceService → assert disposable income formula is correct.
+ * IT2: Create subscriptions -> call FinanceService -> assert disposable income formula is correct.
  */
 @SpringBootTest
 @ActiveProfiles("test")
@@ -44,7 +44,7 @@ class IT2_DisposableIncomeTest {
                 BillingFrequency.MONTHLY, LocalDate.now().plusDays(10), user);
         subscriptionRepository.save(s1);
 
-        // Yearly subscription: 120.00 → 10.00/month
+        // Yearly subscription: 120.00 -> 10.00/month
         Subscription s2 = new Subscription("Adobe CC", new BigDecimal("120.00"),
                 BillingFrequency.YEARLY, LocalDate.now().plusDays(200), user);
         subscriptionRepository.save(s2);

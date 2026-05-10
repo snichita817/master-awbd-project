@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layout/base :: layout(~{::title}, ~{::main})}" lang="en">
 <head>
-    <title>Categories – Finance Tracker</title>
+    <title>Categories  -  Finance Tracker</title>
 </head>
 <body>
 <main>
@@ -29,7 +29,7 @@
         <tbody>
             <tr th:each="cat : ${categories}">
                 <td th:text="${cat.name}"></td>
-                <td th:text="${cat.description != null ? cat.description : '—'}"></td>
+                <td th:text="${cat.description != null ? cat.description : ' - '}"></td>
                 <td>
                     <a th:href="@{/categories/{id}/edit(id=${cat.id})}" class="btn btn-secondary btn-sm">Edit</a>
                     <form th:action="@{/categories/{id}/delete(id=${cat.id})}" method="post" style="display:inline;"

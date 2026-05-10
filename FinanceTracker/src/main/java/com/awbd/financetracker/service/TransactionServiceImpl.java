@@ -5,6 +5,8 @@ import com.awbd.financetracker.entity.Transaction;
 import com.awbd.financetracker.exception.ResourceNotFoundException;
 import com.awbd.financetracker.repository.SubscriptionRepository;
 import com.awbd.financetracker.repository.TransactionRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +18,8 @@ import java.util.Optional;
 @Service
 @Transactional
 public class TransactionServiceImpl implements TransactionService {
+
+    private static final Logger log = LoggerFactory.getLogger(TransactionServiceImpl.class);
 
     private final TransactionRepository transactionRepository;
     private final SubscriptionRepository subscriptionRepository;
@@ -37,7 +41,10 @@ public class TransactionServiceImpl implements TransactionService {
             transaction.setTransactionDate(LocalDateTime.now());
         }
 
-        return transactionRepository.save(transaction);
+        Transaction saved = transactionRepository.save(transaction);
+        log.info("Transaction created: id={}, subscriptionId={}, amount={}",
+                saved.getId(), subscriptionId, saved.getAmount());
+        return saved;
     }
 
     @Override

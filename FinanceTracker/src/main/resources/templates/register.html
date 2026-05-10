@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Register – Finance Tracker</title>
+    <title>Register  -  Finance Tracker</title>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -77,7 +77,7 @@
         <div th:unless="${#fields.hasErrors('email')}" class="field-ok"></div>
 
         <label for="password">Password <small style="font-weight:normal;color:#718096;">(min 8 characters)</small></label>
-        <input type="password" id="password" th:field="*{password}" placeholder="••••••••"/>
+        <input type="password" id="password" th:field="*{password}" placeholder="********"/>
         <span class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
         <div th:unless="${#fields.hasErrors('password')}" class="field-ok"></div>
 

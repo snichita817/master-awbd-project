@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layout/base :: layout(~{::title}, ~{::main})}" lang="en">
 <head>
-    <title th:text="${subscription.name + ' – Shares – Finance Tracker'}">Shares – Finance Tracker</title>
+    <title th:text="${subscription.name + '  -  Shares  -  Finance Tracker'}">Shares  -  Finance Tracker</title>
 </head>
 <body>
 <main>
@@ -59,16 +59,16 @@
                 <td>
                     <span th:if="${share.percentageShare != null}"  class="badge badge-blue">Percentage</span>
                     <span th:if="${share.percentageShare == null and share.fixedAmount != null}" class="badge badge-green">Fixed</span>
-                    <span th:if="${share.percentageShare == null and share.fixedAmount == null}" class="badge badge-gray">—</span>
+                    <span th:if="${share.percentageShare == null and share.fixedAmount == null}" class="badge badge-gray"> - </span>
                 </td>
                 <td>
                     <span th:if="${share.percentageShare != null}"
                           th:text="${#numbers.formatDecimal(share.percentageShare, 1, 2) + '%'}"></span>
                     <span th:if="${share.percentageShare == null and share.fixedAmount != null}"
                           th:text="${#numbers.formatDecimal(share.fixedAmount, 1, 2) + ' RON'}"></span>
-                    <span th:if="${share.percentageShare == null and share.fixedAmount == null}">—</span>
+                    <span th:if="${share.percentageShare == null and share.fixedAmount == null}"> - </span>
                 </td>
-                <td th:text="${monthlyAmounts[share.user.id] != null ? #numbers.formatDecimal(monthlyAmounts[share.user.id], 1, 2) : '—'}"></td>
+                <td th:text="${monthlyAmounts[share.user.id] != null ? #numbers.formatDecimal(monthlyAmounts[share.user.id], 1, 2) : ' - '}"></td>
                 <td th:text="${#temporals.format(share.addedOn, 'dd MMM yyyy')}"></td>
                 <td>
                     <form th:action="@{/subscriptions/{id}/shares/{userId}/delete(id=${subscription.id},userId=${share.user.id})}"
@@ -106,7 +106,7 @@
                 </div>
             </div>
             <p style="font-size:.8rem;color:#718096;margin-top:-.5rem;margin-bottom:1rem;">
-                Enter one value — the other will be calculated automatically.
+                Enter one value  -  the other will be calculated automatically.
             </p>
 
             <div class="form-actions">

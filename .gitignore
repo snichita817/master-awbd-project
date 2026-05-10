@@ -36,3 +36,6 @@ build/
 
 # H2 Database files
 /FinanceTracker/data/
+
+# Application logs
+/FinanceTracker/logs/

@@ -97,7 +97,7 @@ class SubscriptionServiceTest {
 
         subscriptionService.createSubscription(1L, 10L, null, subscription);
 
-        // BudgetService.addSubscriptionToBudget is called with the raw price and frequency —
+        // BudgetService.addSubscriptionToBudget is called with the raw price and frequency  - 
         // the normalization to monthly (price/12 HALF_UP) happens inside BudgetServiceImpl.
         verify(budgetService).addSubscriptionToBudget(
                 category,

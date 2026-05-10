@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layout/base :: layout(~{::title}, ~{::main})}" lang="en">
 <head>
-    <title th:text="${paymentMethod.id == null ? 'New Payment Method' : 'Edit Payment Method'} + ' – Finance Tracker'">Payment Method – Finance Tracker</title>
+    <title th:text="${paymentMethod.id == null ? 'New Payment Method' : 'Edit Payment Method'} + '  -  Finance Tracker'">Payment Method  -  Finance Tracker</title>
 </head>
 <body>
 <main>
@@ -15,7 +15,7 @@
             <div class="form-group">
                 <label for="type">Type <span style="color:#e53e3e;">*</span></label>
                 <select id="type" th:field="*{type}" required>
-                    <option value="">— Select type —</option>
+                    <option value=""> -  Select type  - </option>
                     <option th:each="pt : ${paymentTypes}"
                             th:value="${pt}"
                             th:text="${pt.name().replace('_', ' ')}"></option>

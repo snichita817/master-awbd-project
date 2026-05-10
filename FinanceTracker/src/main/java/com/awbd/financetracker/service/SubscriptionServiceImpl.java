@@ -7,6 +7,8 @@ import com.awbd.financetracker.exception.ResourceNotFoundException;
 import com.awbd.financetracker.repository.CategoryRepository;
 import com.awbd.financetracker.repository.SubscriptionRepository;
 import com.awbd.financetracker.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +19,8 @@ import java.util.Optional;
 @Service
 @Transactional
 public class SubscriptionServiceImpl implements SubscriptionService {
+
+    private static final Logger log = LoggerFactory.getLogger(SubscriptionServiceImpl.class);
 
     private final SubscriptionRepository subscriptionRepository;
     private final UserRepository userRepository;
@@ -59,6 +63,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         // Update budget's currentSpending
         budgetService.addSubscriptionToBudget(saved.getCategory(), saved.getPrice(), saved.getBillingFrequency());
 
+        log.info("Subscription created: id={}, name='{}', userId={}, price={}",
+                saved.getId(), saved.getName(), userId, saved.getPrice());
         return saved;
     }
 
@@ -133,6 +139,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         budgetService.removeSubscriptionFromBudget(oldCategory, oldPrice, oldFrequency);
         budgetService.addSubscriptionToBudget(saved.getCategory(), saved.getPrice(), saved.getBillingFrequency());
 
+        log.info("Subscription updated: id={}, name='{}'", saved.getId(), saved.getName());
         return saved;
     }
 
@@ -149,6 +156,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         );
 
         subscriptionRepository.deleteById(subscription.getId());
+        log.info("Subscription deleted: id={}", id);
     }
 }
 

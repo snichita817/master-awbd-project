@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layout/base :: layout(~{::title}, ~{::main})}" lang="en">
 <head>
-    <title>Subscriptions – Finance Tracker</title>
+    <title>Subscriptions  -  Finance Tracker</title>
 </head>
 <body>
 <main>
@@ -80,7 +80,7 @@
                               class="badge badge-green" style="margin-left:.4rem;font-size:.7rem;">Shared</span>
                     </td>
                     <td><span class="badge badge-blue" style="font-size:.7rem;">Mine</span></td>
-                    <td th:text="${sub.category != null ? sub.category.name : '—'}"></td>
+                    <td th:text="${sub.category != null ? sub.category.name : ' - '}"></td>
                     <td th:text="${#numbers.formatDecimal(sub.price, 1, 2)}"></td>
                     <td><span class="badge badge-blue" th:text="${sub.billingFrequency}"></span></td>
                     <td th:text="${#temporals.format(sub.renewalDate, 'dd MMM yyyy')}"></td>
@@ -102,14 +102,14 @@
                     <td th:text="${share.subscription.name}"></td>
                     <td><span class="badge badge-orange" style="font-size:.7rem;">Shared with me</span></td>
                     <td>
-                        <div th:text="${share.subscription.category != null ? share.subscription.category.name : '—'}"></div>
+                        <div th:text="${share.subscription.category != null ? share.subscription.category.name : ' - '}"></div>
                         <div style="font-size:.75rem;color:#718096;"
                              th:text="'by ' + ${share.subscription.user.name}"></div>
                     </td>
                     <td>
                         <span th:if="${sharedMonthlyAmounts[share.id.subscriptionId] != null}"
                               th:text="${#numbers.formatDecimal(sharedMonthlyAmounts[share.id.subscriptionId], 1, 2)}"></span>
-                        <span th:if="${sharedMonthlyAmounts[share.id.subscriptionId] == null}">—</span>
+                        <span th:if="${sharedMonthlyAmounts[share.id.subscriptionId] == null}"> - </span>
                         <div style="font-size:.75rem;color:#718096;">
                             <span th:if="${share.percentageShare != null}"
                                   th:text="${#numbers.formatDecimal(share.percentageShare, 1, 2) + '% of ' + #numbers.formatDecimal(share.subscription.price, 1, 2)}"></span>
@@ -118,7 +118,7 @@
                     </td>
                     <td><span class="badge badge-blue" th:text="${share.subscription.billingFrequency}"></span></td>
                     <td th:text="${#temporals.format(share.subscription.renewalDate, 'dd MMM yyyy')}"></td>
-                    <td style="color:#718096;">—</td>
+                    <td style="color:#718096;"> - </td>
                 </tr>
             </th:block>
         </tbody>

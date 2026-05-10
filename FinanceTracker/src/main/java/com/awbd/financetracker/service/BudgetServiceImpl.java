@@ -7,6 +7,8 @@ import com.awbd.financetracker.exception.DuplicateResourceException;
 import com.awbd.financetracker.exception.ResourceNotFoundException;
 import com.awbd.financetracker.repository.BudgetRepository;
 import com.awbd.financetracker.repository.CategoryRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +20,8 @@ import java.util.Optional;
 @Service
 @Transactional
 public class BudgetServiceImpl implements BudgetService {
+
+    private static final Logger log = LoggerFactory.getLogger(BudgetServiceImpl.class);
 
     private final BudgetRepository budgetRepository;
     private final CategoryRepository categoryRepository;
@@ -50,7 +54,9 @@ public class BudgetServiceImpl implements BudgetService {
             budget.setCurrentSpending(budget.getCurrentSpending().add(monthlyCost));
         }
 
-        return budgetRepository.save(budget);
+        Budget saved = budgetRepository.save(budget);
+        log.info("Budget created: id={}, categoryId={}, maxLimit={}", saved.getId(), categoryId, saved.getMaxLimit());
+        return saved;
     }
 
     @Override
@@ -90,7 +96,9 @@ public class BudgetServiceImpl implements BudgetService {
             budget.setCurrentSpending(updatedBudget.getCurrentSpending());
         }
 
-        return budgetRepository.save(budget);
+        Budget saved = budgetRepository.save(budget);
+        log.info("Budget updated: id={}, maxLimit={}, currentSpending={}", saved.getId(), saved.getMaxLimit(), saved.getCurrentSpending());
+        return saved;
     }
 
     @Override
@@ -99,6 +107,7 @@ public class BudgetServiceImpl implements BudgetService {
                 .orElseThrow(() -> new ResourceNotFoundException("Budget not found with id: " + id));
 
         budgetRepository.delete(budget);
+        log.info("Budget deleted: id={}", id);
     }
 
     @Override

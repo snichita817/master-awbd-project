@@ -19,8 +19,4 @@ springdoc:
     tags-sorter: alpha
 
 logging:
-  level:
-    web: debug
-    sql: debug
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+  config: classpath:logback-spring.xml

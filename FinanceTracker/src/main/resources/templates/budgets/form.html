@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layout/base :: layout(~{::title}, ~{::main})}" lang="en">
 <head>
-    <title th:text="${budget.id == null ? 'New Budget' : 'Edit Budget'} + ' – Finance Tracker'">Budget – Finance Tracker</title>
+    <title th:text="${budget.id == null ? 'New Budget' : 'Edit Budget'} + '  -  Finance Tracker'">Budget  -  Finance Tracker</title>
 </head>
 <body>
 <main>
@@ -16,7 +16,7 @@
             <div th:if="${budget.id == null}" class="form-group">
                 <label for="categoryId">Category <span style="color:#e53e3e;">*</span></label>
                 <select id="categoryId" name="categoryId" required>
-                    <option value="">— select a category —</option>
+                    <option value=""> -  select a category  - </option>
                     <option th:each="cat : ${categories}"
                             th:value="${cat.id}"
                             th:text="${cat.name}"
@@ -28,7 +28,7 @@
             <!-- Category display (edit only) -->
             <div th:unless="${budget.id == null}" class="form-group">
                 <label>Category</label>
-                <input type="text" th:value="${budget.category != null ? budget.category.name : '—'}" readonly
+                <input type="text" th:value="${budget.category != null ? budget.category.name : ' - '}" readonly
                        style="background:#f7fafc;cursor:not-allowed;"/>
             </div>
 

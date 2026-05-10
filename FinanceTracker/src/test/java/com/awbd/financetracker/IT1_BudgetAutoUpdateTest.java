@@ -24,7 +24,7 @@ import java.time.LocalDate;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * IT1: Create user → category → budget → subscription; assert budget.currentSpending is updated.
+ * IT1: Create user -> category -> budget -> subscription; assert budget.currentSpending is updated.
  */
 @SpringBootTest
 @ActiveProfiles("test")

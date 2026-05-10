@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layout/base :: layout(~{::title}, ~{::main})}" lang="en">
 <head>
-    <title th:text="${category.id == null ? 'New Category' : 'Edit Category'} + ' – Finance Tracker'">Category – Finance Tracker</title>
+    <title th:text="${category.id == null ? 'New Category' : 'Edit Category'} + '  -  Finance Tracker'">Category  -  Finance Tracker</title>
 </head>
 <body>
 <main>
@@ -23,7 +23,7 @@
             <div class="form-group">
                 <label for="description">Description</label>
                 <textarea id="description" th:field="*{description}"
-                          placeholder="Optional description…" maxlength="500"></textarea>
+                          placeholder="Optional description..." maxlength="500"></textarea>
                 <div class="error-msg" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
             </div>
 

@@ -40,7 +40,7 @@ public class SubscriptionShareViewController {
     }
 
     // -------------------------------------------------------------------------
-    // GET /{id}/shares — list current shares + add-share form
+    // GET /{id}/shares  -  list current shares + add-share form
     // -------------------------------------------------------------------------
 
     @GetMapping("/{id}/shares")
@@ -67,7 +67,7 @@ public class SubscriptionShareViewController {
     }
 
     // -------------------------------------------------------------------------
-    // POST /{id}/shares — add a share
+    // POST /{id}/shares  -  add a share
     // -------------------------------------------------------------------------
 
     @PostMapping("/{id}/shares")
@@ -121,7 +121,7 @@ public class SubscriptionShareViewController {
     }
 
     // -------------------------------------------------------------------------
-    // POST /{id}/shares/{userId}/delete — remove a share
+    // POST /{id}/shares/{userId}/delete  -  remove a share
     // -------------------------------------------------------------------------
 
     @PostMapping("/{id}/shares/{userId}/delete")

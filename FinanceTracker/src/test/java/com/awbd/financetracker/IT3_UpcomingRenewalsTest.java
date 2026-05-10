@@ -39,12 +39,12 @@ class IT3_UpcomingRenewalsTest {
     void subscriptionRenewingIn3Days_appearsInUpcomingRenewals() {
         User user = userService.createUser("Grace", "grace@it3.com", new BigDecimal("3000.00"));
 
-        // Renewal in 3 days — within the 30-day window
+        // Renewal in 3 days  -  within the 30-day window
         Subscription upcoming = new Subscription("Hulu", new BigDecimal("12.00"),
                 BillingFrequency.MONTHLY, LocalDate.now().plusDays(3), user);
         subscriptionRepository.save(upcoming);
 
-        // Renewal in 10 days — outside the 7-day window
+        // Renewal in 10 days  -  outside the 7-day window
         Subscription distant = new Subscription("Disney+", new BigDecimal("8.00"),
                 BillingFrequency.MONTHLY, LocalDate.now().plusDays(10), user);
         subscriptionRepository.save(distant);

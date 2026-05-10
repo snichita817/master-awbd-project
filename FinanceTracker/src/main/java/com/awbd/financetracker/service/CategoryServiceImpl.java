@@ -5,6 +5,8 @@ import com.awbd.financetracker.exception.DuplicateResourceException;
 import com.awbd.financetracker.exception.ResourceNotFoundException;
 import com.awbd.financetracker.repository.CategoryRepository;
 import com.awbd.financetracker.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +16,8 @@ import java.util.Optional;
 @Service
 @Transactional
 public class CategoryServiceImpl implements CategoryService {
+
+    private static final Logger log = LoggerFactory.getLogger(CategoryServiceImpl.class);
 
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
@@ -34,7 +38,9 @@ public class CategoryServiceImpl implements CategoryService {
         }
 
         category.setUser(user);
-        return categoryRepository.save(category);
+        Category saved = categoryRepository.save(category);
+        log.info("Category created: id={}, name='{}', userId={}", saved.getId(), saved.getName(), userId);
+        return saved;
     }
 
     @Override
@@ -73,7 +79,9 @@ public class CategoryServiceImpl implements CategoryService {
         category.setName(updatedCategory.getName());
         category.setDescription(updatedCategory.getDescription());
 
-        return categoryRepository.save(category);
+        Category saved = categoryRepository.save(category);
+        log.info("Category updated: id={}, name='{}'", saved.getId(), saved.getName());
+        return saved;
     }
 
     @Override
@@ -87,6 +95,7 @@ public class CategoryServiceImpl implements CategoryService {
         }
 
         categoryRepository.delete(category);
+        log.info("Category deleted: id={}", id);
     }
 }
 

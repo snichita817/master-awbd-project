@@ -9,6 +9,8 @@ import com.awbd.financetracker.exception.ResourceNotFoundException;
 import com.awbd.financetracker.repository.SubscriptionRepository;
 import com.awbd.financetracker.repository.SubscriptionShareRepository;
 import com.awbd.financetracker.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +21,8 @@ import java.util.Optional;
 @Service
 @Transactional
 public class SubscriptionShareServiceImpl implements SubscriptionShareService {
+
+    private static final Logger log = LoggerFactory.getLogger(SubscriptionShareServiceImpl.class);
 
     private final SubscriptionShareRepository subscriptionShareRepository;
     private final SubscriptionRepository subscriptionRepository;
@@ -46,7 +50,9 @@ public class SubscriptionShareServiceImpl implements SubscriptionShareService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
         SubscriptionShare share = new SubscriptionShare(subscription, user, percentageShare, fixedAmount);
-        return subscriptionShareRepository.save(share);
+        SubscriptionShare saved = subscriptionShareRepository.save(share);
+        log.info("SubscriptionShare assigned: subscriptionId={}, userId={}", subscriptionId, userId);
+        return saved;
     }
 
     @Override
@@ -76,7 +82,9 @@ public class SubscriptionShareServiceImpl implements SubscriptionShareService {
                         "Share not found for subscription " + subscriptionId + " and user " + userId));
         share.setPercentageShare(percentageShare);
         share.setFixedAmount(fixedAmount);
-        return subscriptionShareRepository.save(share);
+        SubscriptionShare saved = subscriptionShareRepository.save(share);
+        log.info("SubscriptionShare updated: subscriptionId={}, userId={}", subscriptionId, userId);
+        return saved;
     }
 
     @Override
@@ -87,5 +95,6 @@ public class SubscriptionShareServiceImpl implements SubscriptionShareService {
                         "Share not found for subscription " + subscriptionId + " and user " + userId));
 
         subscriptionShareRepository.deleteById(shareId);
+        log.info("SubscriptionShare removed: subscriptionId={}, userId={}", subscriptionId, userId);
     }
 }

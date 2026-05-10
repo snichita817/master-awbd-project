@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layout/base :: layout(~{::title}, ~{::main})}" lang="en">
 <head>
-    <title>Budgets – Finance Tracker</title>
+    <title>Budgets  -  Finance Tracker</title>
 </head>
 <body>
 <main>
@@ -30,7 +30,7 @@
         </thead>
         <tbody>
             <tr th:each="b : ${budgets}">
-                <td th:text="${b.category != null ? b.category.name : '—'}"></td>
+                <td th:text="${b.category != null ? b.category.name : ' - '}"></td>
                 <td th:text="${#numbers.formatDecimal(b.maxLimit, 1, 2)}"></td>
                 <td th:text="${#numbers.formatDecimal(spendingByCategory[b.category?.name] ?: 0, 1, 2)}"></td>
                 <td>

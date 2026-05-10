@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layout/base :: layout(~{::title}, ~{::main})}" lang="en">
 <head>
-    <title>Transactions – Finance Tracker</title>
+    <title>Transactions  -  Finance Tracker</title>
 </head>
 <body>
 <main>
@@ -28,7 +28,7 @@
         </thead>
         <tbody>
             <tr th:each="tx : ${transactions}">
-                <td th:text="${tx.subscription != null ? tx.subscription.name : '—'}"></td>
+                <td th:text="${tx.subscription != null ? tx.subscription.name : ' - '}"></td>
                 <td th:text="${#numbers.formatDecimal(tx.amount, 1, 2)}"></td>
                 <td th:text="${#temporals.format(tx.transactionDate, 'dd MMM yyyy HH:mm')}"></td>
             </tr>

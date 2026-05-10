@@ -5,6 +5,8 @@ import com.awbd.financetracker.exception.ResourceNotFoundException;
 import com.awbd.financetracker.enums.PaymentType;
 import com.awbd.financetracker.repository.PaymentMethodRepository;
 import com.awbd.financetracker.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +16,8 @@ import java.util.Optional;
 @Service
 @Transactional
 public class PaymentMethodServiceImpl implements PaymentMethodService {
+
+    private static final Logger log = LoggerFactory.getLogger(PaymentMethodServiceImpl.class);
 
     private final PaymentMethodRepository paymentMethodRepository;
     private final UserRepository userRepository;
@@ -30,7 +34,9 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
         paymentMethod.setUser(user);
-        return paymentMethodRepository.save(paymentMethod);
+        PaymentMethod saved = paymentMethodRepository.save(paymentMethod);
+        log.info("PaymentMethod created: id={}, type={}, userId={}", saved.getId(), saved.getType(), userId);
+        return saved;
     }
 
     @Override
@@ -65,7 +71,9 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
         existing.setType(updatedPaymentMethod.getType());
         existing.setDetails(updatedPaymentMethod.getDetails());
 
-        return paymentMethodRepository.save(existing);
+        PaymentMethod saved = paymentMethodRepository.save(existing);
+        log.info("PaymentMethod updated: id={}, type={}", saved.getId(), saved.getType());
+        return saved;
     }
 
     @Override
@@ -79,6 +87,7 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
         }
 
         paymentMethodRepository.delete(paymentMethod);
+        log.info("PaymentMethod deleted: id={}", id);
     }
 }
 
