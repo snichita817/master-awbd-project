@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -104,4 +105,55 @@ class CategoryServiceTest {
         assertThatThrownBy(() -> categoryService.deleteCategory(99L))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
+
+    @Test
+    void updateCategory_happyPath_updatesAndSaves() {
+        Category existing = new Category("Streaming", "Video", user);
+        existing.setId(10L);
+
+        when(categoryRepository.findById(10L)).thenReturn(Optional.of(existing));
+        when(categoryRepository.existsByNameAndUserId("Streaming Updated", 1L)).thenReturn(false);
+        when(categoryRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        Category updated = new Category("Streaming Updated", "New desc", null);
+        Category result = categoryService.updateCategory(10L, updated);
+
+        assertThat(result.getName()).isEqualTo("Streaming Updated");
+        assertThat(result.getDescription()).isEqualTo("New desc");
+        verify(categoryRepository).save(existing);
+    }
+
+    @Test
+    void deleteCategory_happyPath_deletesCategory() {
+        Category existing = new Category("Streaming", "Video", user);
+        existing.setId(10L);
+
+        when(categoryRepository.findById(10L)).thenReturn(Optional.of(existing));
+
+        categoryService.deleteCategory(10L);
+
+        verify(categoryRepository).delete(existing);
+    }
+
+    @Test
+    void getCategoriesByUserId_happyPath_returnsList() {
+        when(userRepository.existsById(1L)).thenReturn(true);
+        when(categoryRepository.findByUserId(1L)).thenReturn(List.of(
+                new Category("Streaming", "Video", user)));
+
+        List<Category> result = categoryService.getCategoriesByUserId(1L);
+
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getName()).isEqualTo("Streaming");
+    }
+
+    @Test
+    void getCategoriesByUserId_userNotFound_throwsResourceNotFoundException() {
+        when(userRepository.existsById(99L)).thenReturn(false);
+
+        assertThatThrownBy(() -> categoryService.getCategoriesByUserId(99L))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("99");
+    }
+
 }

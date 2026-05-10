@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -130,4 +131,61 @@ class SubscriptionServiceTest {
         verify(budgetService).removeSubscriptionFromBudget(category, new BigDecimal("15.00"), BillingFrequency.MONTHLY);
         verify(subscriptionRepository).deleteById(100L);
     }
+
+    @Test
+    void getSubscriptionsByUserId_pastMonthlyRenewal_advancedToNextMonth() {
+        LocalDate pastDate = LocalDate.now().minusDays(10);
+        Subscription sub = new Subscription("Spotify", new BigDecimal("15.00"),
+                BillingFrequency.MONTHLY, pastDate, user);
+        sub.setId(1L);
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(subscriptionRepository.findByUserId(1L)).thenReturn(List.of(sub));
+        when(subscriptionRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        List<Subscription> result = subscriptionService.getSubscriptionsByUserId(1L);
+
+        assertThat(result.get(0).getRenewalDate()).isAfterOrEqualTo(LocalDate.now());
+        verify(subscriptionRepository).save(sub);
+    }
+
+    @Test
+    void getSubscriptionsByUserId_futureRenewal_notAdvanced() {
+        LocalDate futureDate = LocalDate.now().plusDays(15);
+        Subscription sub = new Subscription("Netflix", new BigDecimal("15.00"),
+                BillingFrequency.MONTHLY, futureDate, user);
+        sub.setId(2L);
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(subscriptionRepository.findByUserId(1L)).thenReturn(List.of(sub));
+
+        List<Subscription> result = subscriptionService.getSubscriptionsByUserId(1L);
+
+        assertThat(result.get(0).getRenewalDate()).isEqualTo(futureDate);
+        verify(subscriptionRepository, never()).save(any());
+    }
+
+    @Test
+    void getSubscriptionsByUserId_userNotFound_throwsResourceNotFoundException() {
+        when(userRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> subscriptionService.getSubscriptionsByUserId(99L))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("99");
+    }
+
+    @Test
+    void getUpcomingRenewals_userExists_returnsList() {
+        Subscription sub = new Subscription("Spotify", new BigDecimal("10.00"),
+                BillingFrequency.MONTHLY, LocalDate.now().plusDays(5), user);
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(subscriptionRepository.findUpcomingRenewals(1L)).thenReturn(List.of(sub));
+
+        List<Subscription> result = subscriptionService.getUpcomingRenewals(1L);
+
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getName()).isEqualTo("Spotify");
+    }
+
 }

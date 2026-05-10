@@ -1,6 +1,8 @@
 package com.awbd.financetracker.service;
 
+import com.awbd.financetracker.entity.Category;
 import com.awbd.financetracker.entity.Subscription;
+import com.awbd.financetracker.entity.SubscriptionShare;
 import com.awbd.financetracker.entity.User;
 import com.awbd.financetracker.enums.BillingFrequency;
 import com.awbd.financetracker.exception.ResourceNotFoundException;
@@ -17,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -112,4 +115,42 @@ class FinanceServiceTest {
 
         assertThat(result).isEqualByComparingTo("12.00");
     }
+
+    @Test
+    void getSpendingByCategory_groupsByCategory() {
+        Category cat = new Category("Streaming", "video", user);
+        cat.setId(10L);
+        Subscription s1 = new Subscription("Netflix", new BigDecimal("15.00"),
+                BillingFrequency.MONTHLY, LocalDate.now().plusDays(5), user);
+        s1.setCategory(cat);
+        Subscription s2 = new Subscription("Spotify", new BigDecimal("10.00"),
+                BillingFrequency.MONTHLY, LocalDate.now().plusDays(3), user);
+        s2.setCategory(cat);
+
+        when(subscriptionRepository.findByUserId(1L)).thenReturn(List.of(s1, s2));
+        when(subscriptionShareRepository.findBySubscriptionOwnerId(1L)).thenReturn(List.of());
+
+        Map<String, BigDecimal> result = financeService.getSpendingByCategory(1L);
+
+        assertThat(result).containsKey("Streaming");
+        assertThat(result.get("Streaming")).isEqualByComparingTo("25.00");
+    }
+
+    @Test
+    void calculateTotalMonthlySubscriptionCost_withPercentageShare_subtractsSharedAway() {
+        Subscription s = new Subscription("Netflix", new BigDecimal("30.00"),
+                BillingFrequency.MONTHLY, LocalDate.now().plusDays(5), user);
+        s.setId(1L);
+
+        SubscriptionShare share = new SubscriptionShare(s, user, new BigDecimal("50"), null);
+
+        when(subscriptionRepository.findByUserId(1L)).thenReturn(List.of(s));
+        when(subscriptionShareRepository.findBySubscriptionOwnerId(1L)).thenReturn(List.of(share));
+
+        // total = 30.00; shared away = 30 * 50/100 = 15.00; net = 15.00
+        BigDecimal result = financeService.calculateTotalMonthlySubscriptionCost(1L);
+
+        assertThat(result).isEqualByComparingTo("15.00");
+    }
+
 }

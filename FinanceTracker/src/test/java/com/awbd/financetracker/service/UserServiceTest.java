@@ -1,8 +1,10 @@
 package com.awbd.financetracker.service;
 
+import com.awbd.financetracker.entity.Role;
 import com.awbd.financetracker.entity.User;
 import com.awbd.financetracker.exception.DuplicateResourceException;
 import com.awbd.financetracker.exception.ResourceNotFoundException;
+import com.awbd.financetracker.repository.RoleRepository;
 import com.awbd.financetracker.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,6 +31,9 @@ class UserServiceTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private RoleRepository roleRepository;
 
     @InjectMocks
     private UserServiceImpl userService;
@@ -102,4 +107,30 @@ class UserServiceTest {
         assertThatThrownBy(() -> userService.getUserById(99L))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
+
+    @Test
+    void registerUser_happyPath_encodesPasswordAndSaves() {
+        Role userRole = new Role("ROLE_USER");
+        when(userRepository.existsByEmail("alice@example.com")).thenReturn(false);
+        when(roleRepository.findByName("ROLE_USER")).thenReturn(Optional.of(userRole));
+        when(passwordEncoder.encode("secret")).thenReturn("encoded");
+        when(userRepository.save(any(User.class))).thenReturn(user);
+
+        User result = userService.registerUser("Alice", "alice@example.com", "secret", new BigDecimal("3000.00"));
+
+        assertThat(result).isNotNull();
+        verify(passwordEncoder).encode("secret");
+        verify(userRepository).save(any(User.class));
+    }
+
+    @Test
+    void registerUser_duplicateEmail_throwsDuplicateResourceException() {
+        when(userRepository.existsByEmail("alice@example.com")).thenReturn(true);
+
+        assertThatThrownBy(() -> userService.registerUser("Alice", "alice@example.com", "pass", new BigDecimal("1000.00")))
+                .isInstanceOf(DuplicateResourceException.class);
+
+        verify(userRepository, never()).save(any());
+    }
+
 }

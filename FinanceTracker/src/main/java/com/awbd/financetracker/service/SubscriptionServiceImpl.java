@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -81,12 +82,13 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<Subscription> getSubscriptionsByUserId(Long userId) {
-        User user = userRepository.findById(userId)
+        userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
-        return subscriptionRepository.findByUserId(userId);
+        List<Subscription> subs = subscriptionRepository.findByUserId(userId);
+        subs.forEach(this::advanceRenewalDateIfPast);
+        return subs;
     }
 
     @Override
@@ -157,6 +159,23 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
         subscriptionRepository.deleteById(subscription.getId());
         log.info("Subscription deleted: id={}", id);
+    }
+
+    private void advanceRenewalDateIfPast(Subscription sub) {
+        LocalDate today = LocalDate.now();
+        if (sub.getRenewalDate() != null && sub.getRenewalDate().isBefore(today)) {
+            LocalDate renewalDate = sub.getRenewalDate();
+            while (renewalDate.isBefore(today)) {
+                renewalDate = switch (sub.getBillingFrequency()) {
+                    case MONTHLY -> renewalDate.plusMonths(1);
+                    case YEARLY  -> renewalDate.plusYears(1);
+                };
+            }
+            sub.setRenewalDate(renewalDate);
+            subscriptionRepository.save(sub);
+            log.info("Renewal date advanced: id={}, name='{}', newDate={}",
+                    sub.getId(), sub.getName(), renewalDate);
+        }
     }
 }
 
