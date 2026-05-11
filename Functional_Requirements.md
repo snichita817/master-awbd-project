@@ -34,3 +34,16 @@ The **Personal Finance & Subscription Tracker** is a Spring Boot application des
 *   **FR 6.1:** The system shall calculate and display the user's **Disposable Income** (Monthly Income - Total Monthly Subscription Liabilities).
 *   **FR 6.2:** The system shall identify and display "Upcoming Renewals" (subscriptions due for payment within the next 7 days).
 *   **FR 6.3:** The system shall provide an aggregated summary of expected costs broken down by category.
+
+---
+
+**7. Contact & Support Ticket System**
+*   **FR 7.1:** Any authenticated user shall be able to submit a support ticket consisting of a subject and a free-form message.
+*   **FR 7.2:** Ticket visibility is strictly per-user: a regular user may only view tickets they personally submitted. Other users' tickets are inaccessible to them regardless of authentication status.
+*   **FR 7.3:** A submitted ticket starts in status `OPEN`. Admins may transition it to `IN_PROGRESS` and then to `RESOLVED` (or back to `IN_PROGRESS` to reopen). Status changes require `ROLE_ADMIN`.
+*   **FR 7.4:** When resolving (or updating) a ticket, an admin may optionally attach a **resolution note** visible to the ticket owner.
+*   **FR 7.5:** Both the ticket owner and any admin may post **replies** to a ticket, forming a threaded conversation. The owner sees the full reply thread on their own ticket; admins see all reply threads on all tickets.
+*   **FR 7.6:** Admins shall have access to a dedicated `/admin/tickets` page listing all tickets across all users, with the ability to filter by status (`OPEN`, `IN_PROGRESS`, `RESOLVED`).
+*   **FR 7.7:** All ticket and reply read/write endpoints are protected by role:
+    *   `/contact/**` — requires `ROLE_USER` (any authenticated user)
+    *   `/admin/tickets/**` — requires `ROLE_ADMIN`

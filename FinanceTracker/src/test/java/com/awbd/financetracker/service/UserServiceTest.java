@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -133,4 +134,103 @@ class UserServiceTest {
         verify(userRepository, never()).save(any());
     }
 
+    // -----------------------------------------------------------------------
+    // updateUser
+    // -----------------------------------------------------------------------
+
+    @Test
+    void updateUser_happyPath_returnsUpdatedUser() {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.existsByEmail("newemail@example.com")).thenReturn(false);
+        when(userRepository.save(any(User.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        User result = userService.updateUser(1L, "Alice Updated", "newemail@example.com", new BigDecimal("4000.00"));
+
+        assertThat(result.getName()).isEqualTo("Alice Updated");
+        assertThat(result.getEmail()).isEqualTo("newemail@example.com");
+        verify(userRepository).save(any(User.class));
+    }
+
+    @Test
+    void updateUser_sameEmail_doesNotCheckDuplicate() {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.save(any(User.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        User result = userService.updateUser(1L, "Alice", "alice@example.com", new BigDecimal("3500.00"));
+
+        assertThat(result.getMonthlyIncome()).isEqualTo(new BigDecimal("3500.00"));
+        verify(userRepository, never()).existsByEmail(anyString());
+    }
+
+    @Test
+    void updateUser_duplicateEmail_throwsDuplicateResourceException() {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.existsByEmail("taken@example.com")).thenReturn(true);
+
+        assertThatThrownBy(() -> userService.updateUser(1L, "Alice", "taken@example.com", new BigDecimal("3000.00")))
+                .isInstanceOf(DuplicateResourceException.class)
+                .hasMessageContaining("taken@example.com");
+
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    void updateUser_notFound_throwsResourceNotFoundException() {
+        when(userRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> userService.updateUser(99L, "X", "x@example.com", BigDecimal.ONE))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("99");
+    }
+
+    // -----------------------------------------------------------------------
+    // getUserByEmail / getAllUsers / searchUsers / existsByEmail
+    // -----------------------------------------------------------------------
+
+    @Test
+    void getUserByEmail_returnsOptional() {
+        when(userRepository.findByEmail("alice@example.com")).thenReturn(Optional.of(user));
+
+        Optional<User> result = userService.getUserByEmail("alice@example.com");
+
+        assertThat(result).isPresent();
+        assertThat(result.get().getName()).isEqualTo("Alice");
+    }
+
+    @Test
+    void getAllUsers_returnsList() {
+        when(userRepository.findAll()).thenReturn(List.of(user));
+
+        List<User> result = userService.getAllUsers();
+
+        assertThat(result).hasSize(1);
+    }
+
+    @Test
+    void searchUsers_withQuery_callsSearchRepository() {
+        when(userRepository.findByNameContainingIgnoreCaseOrEmailContainingIgnoreCase("ali", "ali"))
+                .thenReturn(List.of(user));
+
+        List<User> result = userService.searchUsers("ali");
+
+        assertThat(result).hasSize(1);
+    }
+
+    @Test
+    void searchUsers_blankQuery_returnsAll() {
+        when(userRepository.findAll()).thenReturn(List.of(user));
+
+        List<User> result = userService.searchUsers("");
+
+        assertThat(result).hasSize(1);
+        verify(userRepository).findAll();
+    }
+
+    @Test
+    void existsByEmail_returnsTrue() {
+        when(userRepository.existsByEmail("alice@example.com")).thenReturn(true);
+
+        assertThat(userService.existsByEmail("alice@example.com")).isTrue();
+    }
 }
+

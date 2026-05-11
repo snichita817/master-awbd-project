@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::main})}" lang="en">
+<head>
+    <title>My Support Tickets - Finance Tracker</title>
+</head>
+<body>
+<main>
+    <div class="page-header">
+        <h1>My Support Tickets</h1>
+        <a th:href="@{/contact}" class="btn btn-primary">+ New Ticket</a>
+    </div>
+
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+
+    <div th:if="${#lists.isEmpty(tickets)}"
+         style="background:#fff;border-radius:8px;padding:2rem;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.08);color:#718096;">
+        You have no support tickets. <a th:href="@{/contact}">Submit one now.</a>
+    </div>
+
+    <table th:unless="${#lists.isEmpty(tickets)}">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Subject</th>
+                <th>Status</th>
+                <th>Submitted</th>
+                <th style="width:100px;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="ticket : ${tickets}">
+                <td th:text="${ticket.id}"></td>
+                <td th:text="${ticket.subject}"></td>
+                <td>
+                    <span th:with="s=${ticket.status.name()}"
+                          th:class="${s == 'OPEN'} ? 'badge badge-blue' : (${s == 'IN_PROGRESS'} ? 'badge badge-orange' : 'badge badge-green')"
+                          th:text="${s.replace('_', ' ')}"></span>
+                </td>
+                <td th:text="${#temporals.format(ticket.createdAt, 'dd MMM yyyy')}"></td>
+                <td>
+                    <a th:href="@{/contact/my-tickets/{id}(id=${ticket.id})}" class="btn btn-secondary btn-sm">View</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

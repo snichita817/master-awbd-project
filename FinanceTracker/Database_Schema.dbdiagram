@@ -52,3 +52,23 @@ Table subscription_shares {
     (subscription_id, user_id) [pk]
   }
 }
+
+Table tickets {
+  id bigint [primary key]
+  subject varchar(200) [not null]
+  message text [not null]
+  status varchar [not null, note: 'OPEN | IN_PROGRESS | RESOLVED']
+  resolution_note text
+  created_at datetime [not null]
+  updated_at datetime [not null]
+  submitted_by bigint [not null, ref: > users.id]
+  resolved_by bigint [ref: > users.id, note: 'nullable - admin who last changed status']
+}
+
+Table ticket_replies {
+  id bigint [primary key]
+  message text [not null]
+  created_at datetime [not null]
+  ticket_id bigint [not null, ref: > tickets.id]
+  author_id bigint [not null, ref: > users.id]
+}

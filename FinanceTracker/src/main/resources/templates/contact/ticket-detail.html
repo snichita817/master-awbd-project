@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::main})}" lang="en">
+<head>
+    <title>Ticket Detail - Finance Tracker</title>
+</head>
+<body>
+<main>
+    <div class="page-header">
+        <h1>
+            Ticket #<span th:text="${ticket.id}"></span>
+            <span th:with="s=${ticket.status.name()}"
+                  th:class="${s == 'OPEN'} ? 'badge badge-blue' : (${s == 'IN_PROGRESS'} ? 'badge badge-orange' : 'badge badge-green')"
+                  th:text="${s.replace('_', ' ')}" style="font-size:.9rem;vertical-align:middle;"></span>
+        </h1>
+        <a th:href="@{/contact/my-tickets}" class="btn btn-secondary btn-sm">← Back</a>
+    </div>
+
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+
+    <!-- Ticket details -->
+    <div style="background:#fff;border-radius:8px;padding:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,.08);margin-bottom:1.5rem;">
+        <div style="font-size:1.1rem;font-weight:600;margin-bottom:.5rem;" th:text="${ticket.subject}"></div>
+        <div style="color:#718096;font-size:.8rem;margin-bottom:1rem;"
+             th:text="'Submitted on ' + ${#temporals.format(ticket.createdAt, 'dd MMM yyyy HH:mm')}"></div>
+        <p style="white-space:pre-wrap;" th:text="${ticket.message}"></p>
+
+        <div th:if="${ticket.resolutionNote != null and !ticket.resolutionNote.isEmpty()}"
+             style="margin-top:1rem;padding:.75rem;background:#c6f6d5;border-radius:4px;">
+            <strong>Resolution note:</strong>
+            <p style="white-space:pre-wrap;margin-top:.25rem;" th:text="${ticket.resolutionNote}"></p>
+        </div>
+    </div>
+
+    <!-- Reply thread -->
+    <h2>Replies (<span th:text="${#lists.size(ticket.replies)}"></span>)</h2>
+
+    <div th:if="${#lists.isEmpty(ticket.replies)}" class="empty">No replies yet.</div>
+
+    <div th:each="reply : ${ticket.replies}"
+         th:with="isAdmin=${reply.author.id != ticket.submittedBy.id}"
+         th:style="${isAdmin} ? 'margin-left:2rem;' : ''"
+         style="background:#fff;border-radius:8px;padding:1rem 1.25rem;box-shadow:0 1px 4px rgba(0,0,0,.06);margin-bottom:.75rem;border-left:4px solid #3182ce;">
+        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem;">
+            <strong th:text="${reply.author.name}"></strong>
+            <span th:if="${isAdmin}" class="badge badge-blue" style="font-size:.7rem;">Support</span>
+            <span style="margin-left:auto;color:#718096;font-size:.8rem;"
+                  th:text="${#temporals.format(reply.createdAt, 'dd MMM yyyy HH:mm')}"></span>
+        </div>
+        <p style="white-space:pre-wrap;" th:text="${reply.message}"></p>
+    </div>
+
+    <!-- Reply form (only if not resolved) -->
+    <div th:if="${ticket.status.name() != 'RESOLVED'}"
+         style="background:#fff;border-radius:8px;padding:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,.08);margin-top:1.5rem;">
+        <h2>Add a Reply</h2>
+        <form th:action="@{/contact/my-tickets/{id}/reply(id=${ticket.id})}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <div class="form-group">
+                <textarea name="message" rows="4" required placeholder="Your reply..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm">Send Reply</button>
+        </form>
+    </div>
+</main>
+</body>
+</html>

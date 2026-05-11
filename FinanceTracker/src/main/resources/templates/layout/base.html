@@ -98,7 +98,9 @@
         <a th:href="@{/subscriptions}" sec:authorize="isAuthenticated()">Subscriptions</a>
         <a th:href="@{/transactions}" sec:authorize="isAuthenticated()">Transactions</a>
         <a th:href="@{/budgets}" sec:authorize="isAuthenticated()">Budgets</a>
+        <a th:href="@{/contact}" sec:authorize="isAuthenticated()">Support</a>
         <a th:href="@{/users}" sec:authorize="hasRole('ADMIN')">Users</a>
+        <a th:href="@{/admin/tickets}" sec:authorize="hasRole('ADMIN')">Tickets</a>
     </div>
     <div class="nav-right">
         <span sec:authentication="name"></span>
