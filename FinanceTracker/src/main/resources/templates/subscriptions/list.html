@@ -148,25 +148,7 @@
     </table>
 
     <!-- Pagination (applies to "mine" subscriptions) -->
-    <div th:if="${subscriptionPage != null and subscriptionPage.totalPages > 1}"
-         style="display:flex;align-items:center;justify-content:center;gap:.5rem;margin-top:1.25rem;flex-wrap:wrap;">
-        <a th:href="@{/subscriptions(page=0,size=${currentSize},sort=${currentSort},dir=${currentDir},filter=${filter})}"
-           th:class="${subscriptionPage.first} ? 'btn btn-secondary btn-sm disabled' : 'btn btn-secondary btn-sm'">« First</a>
-        <a th:href="@{/subscriptions(page=${subscriptionPage.number - 1},size=${currentSize},sort=${currentSort},dir=${currentDir},filter=${filter})}"
-           th:class="${subscriptionPage.first} ? 'btn btn-secondary btn-sm disabled' : 'btn btn-secondary btn-sm'">‹ Prev</a>
-        <th:block th:each="i : ${#numbers.sequence(0, subscriptionPage.totalPages - 1)}">
-            <a th:href="@{/subscriptions(page=${i},size=${currentSize},sort=${currentSort},dir=${currentDir},filter=${filter})}"
-               th:text="${i + 1}"
-               th:class="${i == subscriptionPage.number} ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm'"></a>
-        </th:block>
-        <a th:href="@{/subscriptions(page=${subscriptionPage.number + 1},size=${currentSize},sort=${currentSort},dir=${currentDir},filter=${filter})}"
-           th:class="${subscriptionPage.last} ? 'btn btn-secondary btn-sm disabled' : 'btn btn-secondary btn-sm'">Next ›</a>
-        <a th:href="@{/subscriptions(page=${subscriptionPage.totalPages - 1},size=${currentSize},sort=${currentSort},dir=${currentDir},filter=${filter})}"
-           th:class="${subscriptionPage.last} ? 'btn btn-secondary btn-sm disabled' : 'btn btn-secondary btn-sm'">Last »</a>
-    </div>
-    <div th:if="${subscriptionPage != null}"
-         style="text-align:center;margin-top:.5rem;color:#718096;font-size:.875rem;"
-         th:text="'Page ' + (${subscriptionPage.number + 1}) + ' of ' + ${subscriptionPage.totalPages} + ' — ' + ${subscriptionPage.totalElements} + ' total'"></div>
+    <div th:replace="~{layout/pagination :: pagNav(${subscriptionPage}, '/subscriptions', ${currentSize}, ${currentSort}, ${currentDir}, ${filter})}"></div>
 </main>
 </body>
 </html>

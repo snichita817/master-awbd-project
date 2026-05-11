@@ -82,6 +82,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<User> searchUsers(String query) {
+        if (query == null || query.isBlank()) {
+            return userRepository.findAll();
+        }
+        return userRepository.findByNameContainingIgnoreCaseOrEmailContainingIgnoreCase(query, query);
+    }
+
+    @Override
     public User updateUser(Long id, String name, String email, BigDecimal monthlyIncome) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));

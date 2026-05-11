@@ -22,8 +22,9 @@ public class UserViewController {
     }
 
     @GetMapping
-    public String list(Model model) {
-        model.addAttribute("users", userService.getAllUsers());
+    public String list(@RequestParam(defaultValue = "") String search, Model model) {
+        model.addAttribute("users", userService.searchUsers(search));
+        model.addAttribute("search", search);
         return "users/list";
     }
 

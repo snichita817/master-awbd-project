@@ -18,6 +18,8 @@ public interface UserService {
 
     List<User> getAllUsers();
 
+    List<User> searchUsers(String query);
+
     User updateUser(Long id, String name, String email, BigDecimal monthlyIncome);
 
     void deleteUser(Long id);

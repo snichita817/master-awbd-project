@@ -55,25 +55,7 @@
     </table>
 
     <!-- Pagination -->
-    <div th:if="${txPage != null and txPage.totalPages > 1}"
-         style="display:flex;align-items:center;justify-content:center;gap:.5rem;margin-top:1.25rem;flex-wrap:wrap;">
-        <a th:href="@{/transactions(page=0,size=${currentSize},sort=${currentSort},dir=${currentDir})}"
-           th:class="${txPage.first} ? 'btn btn-secondary btn-sm disabled' : 'btn btn-secondary btn-sm'">« First</a>
-        <a th:href="@{/transactions(page=${txPage.number - 1},size=${currentSize},sort=${currentSort},dir=${currentDir})}"
-           th:class="${txPage.first} ? 'btn btn-secondary btn-sm disabled' : 'btn btn-secondary btn-sm'">‹ Prev</a>
-        <th:block th:each="i : ${#numbers.sequence(0, txPage.totalPages - 1)}">
-            <a th:href="@{/transactions(page=${i},size=${currentSize},sort=${currentSort},dir=${currentDir})}"
-               th:text="${i + 1}"
-               th:class="${i == txPage.number} ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm'"></a>
-        </th:block>
-        <a th:href="@{/transactions(page=${txPage.number + 1},size=${currentSize},sort=${currentSort},dir=${currentDir})}"
-           th:class="${txPage.last} ? 'btn btn-secondary btn-sm disabled' : 'btn btn-secondary btn-sm'">Next ›</a>
-        <a th:href="@{/transactions(page=${txPage.totalPages - 1},size=${currentSize},sort=${currentSort},dir=${currentDir})}"
-           th:class="${txPage.last} ? 'btn btn-secondary btn-sm disabled' : 'btn btn-secondary btn-sm'">Last »</a>
-    </div>
-    <div th:if="${txPage != null}"
-         style="text-align:center;margin-top:.5rem;color:#718096;font-size:.875rem;"
-         th:text="'Page ' + (${txPage.number + 1}) + ' of ' + ${txPage.totalPages} + ' — ' + ${txPage.totalElements} + ' total'"></div>
+    <div th:replace="~{layout/pagination :: pagNav(${txPage}, '/transactions', ${currentSize}, ${currentSort}, ${currentDir}, null)}"></div>
 </main>
 </body>
 </html>
