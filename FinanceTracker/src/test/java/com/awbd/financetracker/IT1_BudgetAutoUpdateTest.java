@@ -7,7 +7,6 @@ import com.awbd.financetracker.entity.User;
 import com.awbd.financetracker.enums.BillingFrequency;
 import com.awbd.financetracker.repository.BudgetRepository;
 import com.awbd.financetracker.repository.CategoryRepository;
-import com.awbd.financetracker.repository.SubscriptionRepository;
 import com.awbd.financetracker.repository.UserRepository;
 import com.awbd.financetracker.service.BudgetService;
 import com.awbd.financetracker.service.SubscriptionService;
