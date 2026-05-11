@@ -1,15 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
-<!--
-  pagNav(page, baseUrl, size, sort, dir, filter)
-    page    - Spring Data Page<?> object (may be null)
-    baseUrl - URL path, e.g. '/categories'
-    size    - current page size
-    sort    - current sort field
-    dir     - current sort direction ('asc'/'desc')
-    filter  - optional filter value, or null to omit
--->
+
 <th:block th:fragment="pagNav(page, baseUrl, size, sort, dir, filter)"
           th:with="base=${baseUrl + '?size=' + size + '&sort=' + sort + '&dir=' + dir + (filter != null ? ('&filter=' + filter) : '')}">
 
