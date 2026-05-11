@@ -1,6 +1,8 @@
 package com.awbd.financetracker.service;
 
 import com.awbd.financetracker.entity.Transaction;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,5 +17,7 @@ public interface TransactionService {
     List<Transaction> getTransactionsBySubscriptionId(Long subscriptionId);
 
     List<Transaction> getTransactionsByUserId(Long userId);
+
+    Page<Transaction> getTransactionsByUserId(Long userId, Pageable pageable);
 }
 

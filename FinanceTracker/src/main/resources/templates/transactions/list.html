@@ -14,6 +14,25 @@
     <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
     <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
 
+    <!-- Sort + Page size controls -->
+    <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;flex-wrap:wrap;">
+        <span style="font-weight:500;">Sort by:</span>
+        <a th:href="@{/transactions(page=0,size=${currentSize},sort='transactionDate',dir=${currentSort=='transactionDate'?reverseDir:'desc'})}"
+           th:class="${currentSort=='transactionDate'} ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm'">
+            Date <span th:if="${currentSort=='transactionDate'}" th:text="${currentDir=='asc'}?'↑':'↓'"></span>
+        </a>
+        <a th:href="@{/transactions(page=0,size=${currentSize},sort='amount',dir=${currentSort=='amount'?reverseDir:'desc'})}"
+           th:class="${currentSort=='amount'} ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm'">
+            Amount <span th:if="${currentSort=='amount'}" th:text="${currentDir=='asc'}?'↑':'↓'"></span>
+        </a>
+        <span style="margin-left:auto;">Page size:
+            <a th:each="s : ${#arrays.toArray({5,10,20})}"
+               th:href="@{/transactions(page=0,size=${s},sort=${currentSort},dir=${currentDir})}"
+               th:text="${s}"
+               th:class="${currentSize==s} ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm'"></a>
+        </span>
+    </div>
+
     <div th:if="${#lists.isEmpty(transactions)}" style="background:#fff;border-radius:8px;padding:2rem;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.08);color:#718096;">
         No transactions yet. <a th:href="@{/transactions/new}">Record your first one.</a>
     </div>
@@ -34,6 +53,27 @@
             </tr>
         </tbody>
     </table>
+
+    <!-- Pagination -->
+    <div th:if="${txPage != null and txPage.totalPages > 1}"
+         style="display:flex;align-items:center;justify-content:center;gap:.5rem;margin-top:1.25rem;flex-wrap:wrap;">
+        <a th:href="@{/transactions(page=0,size=${currentSize},sort=${currentSort},dir=${currentDir})}"
+           th:class="${txPage.first} ? 'btn btn-secondary btn-sm disabled' : 'btn btn-secondary btn-sm'">« First</a>
+        <a th:href="@{/transactions(page=${txPage.number - 1},size=${currentSize},sort=${currentSort},dir=${currentDir})}"
+           th:class="${txPage.first} ? 'btn btn-secondary btn-sm disabled' : 'btn btn-secondary btn-sm'">‹ Prev</a>
+        <th:block th:each="i : ${#numbers.sequence(0, txPage.totalPages - 1)}">
+            <a th:href="@{/transactions(page=${i},size=${currentSize},sort=${currentSort},dir=${currentDir})}"
+               th:text="${i + 1}"
+               th:class="${i == txPage.number} ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm'"></a>
+        </th:block>
+        <a th:href="@{/transactions(page=${txPage.number + 1},size=${currentSize},sort=${currentSort},dir=${currentDir})}"
+           th:class="${txPage.last} ? 'btn btn-secondary btn-sm disabled' : 'btn btn-secondary btn-sm'">Next ›</a>
+        <a th:href="@{/transactions(page=${txPage.totalPages - 1},size=${currentSize},sort=${currentSort},dir=${currentDir})}"
+           th:class="${txPage.last} ? 'btn btn-secondary btn-sm disabled' : 'btn btn-secondary btn-sm'">Last »</a>
+    </div>
+    <div th:if="${txPage != null}"
+         style="text-align:center;margin-top:.5rem;color:#718096;font-size:.875rem;"
+         th:text="'Page ' + (${txPage.number + 1}) + ' of ' + ${txPage.totalPages} + ' — ' + ${txPage.totalElements} + ' total'"></div>
 </main>
 </body>
 </html>

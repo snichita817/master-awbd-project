@@ -10,6 +10,9 @@ import com.awbd.financetracker.service.PaymentMethodService;
 import com.awbd.financetracker.service.SubscriptionService;
 import com.awbd.financetracker.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -49,9 +52,15 @@ public class SubscriptionViewController {
     @GetMapping
     public String list(@AuthenticationPrincipal UserDetails principal,
                        @RequestParam(defaultValue = "all") String filter,
+                       @RequestParam(defaultValue = "0") int page,
+                       @RequestParam(defaultValue = "5") int size,
+                       @RequestParam(defaultValue = "name") String sort,
+                       @RequestParam(defaultValue = "asc") String dir,
                        Model model) {
         userService.getUserByEmail(principal.getUsername()).ifPresent(user -> {
-            List<Subscription> subscriptions = subscriptionService.getSubscriptionsByUserId(user.getId());
+            Sort.Direction direction = dir.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+            PageRequest pageRequest = PageRequest.of(page, size, Sort.by(direction, sort));
+            Page<Subscription> subscriptionPage = subscriptionService.getSubscriptionsByUserId(user.getId(), pageRequest);
             List<SubscriptionShare> sharedWithMe = subscriptionShareRepository.findByIdUserId(user.getId());
 
             Map<Long, BigDecimal> sharedMonthlyAmounts = new LinkedHashMap<>();
@@ -70,12 +79,17 @@ public class SubscriptionViewController {
                 sharedMonthlyAmounts.put(share.getId().getSubscriptionId(), amount);
             }
 
-            model.addAttribute("subscriptions", subscriptions);
+            model.addAttribute("subscriptions", subscriptionPage.getContent());
+            model.addAttribute("subscriptionPage", subscriptionPage);
             model.addAttribute("sharedIds", subscriptionShareRepository.findSharedSubscriptionIdsByOwnerId(user.getId()));
             model.addAttribute("sharedWithMe", sharedWithMe);
             model.addAttribute("sharedMonthlyAmounts", sharedMonthlyAmounts);
             model.addAttribute("filter", filter);
         });
+        model.addAttribute("currentSort", sort);
+        model.addAttribute("currentDir", dir);
+        model.addAttribute("reverseDir", dir.equalsIgnoreCase("asc") ? "desc" : "asc");
+        model.addAttribute("currentSize", size);
         return "subscriptions/list";
     }
 

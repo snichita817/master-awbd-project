@@ -1,6 +1,9 @@
 package com.awbd.financetracker.repository;
 
 import com.awbd.financetracker.entity.Subscription;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,6 +17,11 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
 
     @Query("SELECT s FROM Subscription s LEFT JOIN FETCH s.category LEFT JOIN FETCH s.paymentMethod WHERE s.user.id = :userId")
     List<Subscription> findByUserId(@Param("userId") Long userId);
+
+    @EntityGraph(attributePaths = {"category", "paymentMethod"})
+    @Query(value = "SELECT s FROM Subscription s WHERE s.user.id = :userId",
+           countQuery = "SELECT COUNT(s) FROM Subscription s WHERE s.user.id = :userId")
+    Page<Subscription> findPageByUserId(@Param("userId") Long userId, Pageable pageable);
 
     List<Subscription> findByCategoryId(Long categoryId);
 

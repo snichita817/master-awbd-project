@@ -39,3 +39,6 @@ build/
 
 # Application logs
 /FinanceTracker/logs/
+
+# Test output logs
+/FinanceTracker/test_output.log

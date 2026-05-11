@@ -4,6 +4,9 @@ import com.awbd.financetracker.exception.ResourceNotFoundException;
 import com.awbd.financetracker.service.SubscriptionService;
 import com.awbd.financetracker.service.TransactionService;
 import com.awbd.financetracker.service.UserService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -31,9 +34,23 @@ public class TransactionViewController {
     }
 
     @GetMapping
-    public String list(@AuthenticationPrincipal UserDetails principal, Model model) {
-        userService.getUserByEmail(principal.getUsername()).ifPresent(user ->
-            model.addAttribute("transactions", transactionService.getTransactionsByUserId(user.getId())));
+    public String list(@AuthenticationPrincipal UserDetails principal,
+                       @RequestParam(defaultValue = "0") int page,
+                       @RequestParam(defaultValue = "10") int size,
+                       @RequestParam(defaultValue = "transactionDate") String sort,
+                       @RequestParam(defaultValue = "desc") String dir,
+                       Model model) {
+        Sort.Direction direction = dir.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(direction, sort));
+        userService.getUserByEmail(principal.getUsername()).ifPresent(user -> {
+            Page<?> txPage = transactionService.getTransactionsByUserId(user.getId(), pageRequest);
+            model.addAttribute("transactions", txPage.getContent());
+            model.addAttribute("txPage", txPage);
+        });
+        model.addAttribute("currentSort", sort);
+        model.addAttribute("currentDir", dir);
+        model.addAttribute("reverseDir", dir.equalsIgnoreCase("asc") ? "desc" : "asc");
+        model.addAttribute("currentSize", size);
         return "transactions/list";
     }
 

@@ -9,6 +9,8 @@ import com.awbd.financetracker.repository.SubscriptionRepository;
 import com.awbd.financetracker.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -89,6 +91,13 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         List<Subscription> subs = subscriptionRepository.findByUserId(userId);
         subs.forEach(this::advanceRenewalDateIfPast);
         return subs;
+    }
+
+    @Override
+    public Page<Subscription> getSubscriptionsByUserId(Long userId, Pageable pageable) {
+        userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+        return subscriptionRepository.findPageByUserId(userId, pageable);
     }
 
     @Override

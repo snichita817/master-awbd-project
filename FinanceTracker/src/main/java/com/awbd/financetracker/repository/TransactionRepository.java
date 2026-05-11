@@ -1,6 +1,9 @@
 package com.awbd.financetracker.repository;
 
 import com.awbd.financetracker.entity.Transaction;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,6 +16,11 @@ import java.util.List;
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
     List<Transaction> findBySubscriptionId(Long subscriptionId);
+
+    @EntityGraph(attributePaths = {"subscription"})
+    @Query(value = "SELECT t FROM Transaction t WHERE t.subscription.user.id = :userId",
+           countQuery = "SELECT COUNT(t) FROM Transaction t WHERE t.subscription.user.id = :userId")
+    Page<Transaction> findPageByUserId(@Param("userId") Long userId, Pageable pageable);
 
     @Query("SELECT t FROM Transaction t JOIN FETCH t.subscription WHERE t.subscription.user.id = :userId")
     List<Transaction> findByUserId(@Param("userId") Long userId);

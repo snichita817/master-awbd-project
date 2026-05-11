@@ -14,6 +14,25 @@
     <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
     <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
 
+    <!-- Sort + Page size controls -->
+    <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;flex-wrap:wrap;">
+        <span style="font-weight:500;">Sort by:</span>
+        <a th:href="@{/categories(page=0,size=${currentSize},sort='name',dir=${currentSort=='name'?reverseDir:'asc'})}"
+           th:class="${currentSort=='name'} ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm'">
+            Name <span th:if="${currentSort=='name'}" th:text="${currentDir=='asc'}?'↑':'↓'"></span>
+        </a>
+        <a th:href="@{/categories(page=0,size=${currentSize},sort='description',dir=${currentSort=='description'?reverseDir:'asc'})}"
+           th:class="${currentSort=='description'} ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm'">
+            Description <span th:if="${currentSort=='description'}" th:text="${currentDir=='asc'}?'↑':'↓'"></span>
+        </a>
+        <span style="margin-left:auto;">Page size:
+            <a th:each="s : ${#arrays.toArray({5,10,20})}"
+               th:href="@{/categories(page=0,size=${s},sort=${currentSort},dir=${currentDir})}"
+               th:text="${s}"
+               th:class="${currentSize==s} ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm'"></a>
+        </span>
+    </div>
+
     <div th:if="${#lists.isEmpty(categories)}" style="background:#fff;border-radius:8px;padding:2rem;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.08);color:#718096;">
         No categories yet. <a th:href="@{/categories/new}">Create your first one.</a>
     </div>
@@ -41,6 +60,27 @@
             </tr>
         </tbody>
     </table>
+
+    <!-- Pagination -->
+    <div th:if="${categoryPage != null and categoryPage.totalPages > 1}"
+         style="display:flex;align-items:center;justify-content:center;gap:.5rem;margin-top:1.25rem;flex-wrap:wrap;">
+        <a th:href="@{/categories(page=0,size=${currentSize},sort=${currentSort},dir=${currentDir})}"
+           th:class="${categoryPage.first} ? 'btn btn-secondary btn-sm disabled' : 'btn btn-secondary btn-sm'">« First</a>
+        <a th:href="@{/categories(page=${categoryPage.number - 1},size=${currentSize},sort=${currentSort},dir=${currentDir})}"
+           th:class="${categoryPage.first} ? 'btn btn-secondary btn-sm disabled' : 'btn btn-secondary btn-sm'">‹ Prev</a>
+        <th:block th:each="i : ${#numbers.sequence(0, categoryPage.totalPages - 1)}">
+            <a th:href="@{/categories(page=${i},size=${currentSize},sort=${currentSort},dir=${currentDir})}"
+               th:text="${i + 1}"
+               th:class="${i == categoryPage.number} ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm'"></a>
+        </th:block>
+        <a th:href="@{/categories(page=${categoryPage.number + 1},size=${currentSize},sort=${currentSort},dir=${currentDir})}"
+           th:class="${categoryPage.last} ? 'btn btn-secondary btn-sm disabled' : 'btn btn-secondary btn-sm'">Next ›</a>
+        <a th:href="@{/categories(page=${categoryPage.totalPages - 1},size=${currentSize},sort=${currentSort},dir=${currentDir})}"
+           th:class="${categoryPage.last} ? 'btn btn-secondary btn-sm disabled' : 'btn btn-secondary btn-sm'">Last »</a>
+    </div>
+    <div th:if="${categoryPage != null}"
+         style="text-align:center;margin-top:.5rem;color:#718096;font-size:.875rem;"
+         th:text="'Page ' + (${categoryPage.number + 1}) + ' of ' + ${categoryPage.totalPages} + ' ... ' + ${categoryPage.totalElements} + ' total'"></div>
 </main>
 </body>
 </html>

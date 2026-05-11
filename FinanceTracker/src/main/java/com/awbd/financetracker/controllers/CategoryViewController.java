@@ -6,6 +6,9 @@ import com.awbd.financetracker.exception.ResourceNotFoundException;
 import com.awbd.financetracker.service.CategoryService;
 import com.awbd.financetracker.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -27,11 +30,24 @@ public class CategoryViewController {
     }
 
     @GetMapping
-    public String list(@AuthenticationPrincipal UserDetails principal, Model model) {
+    public String list(@AuthenticationPrincipal UserDetails principal,
+                       @RequestParam(defaultValue = "0") int page,
+                       @RequestParam(defaultValue = "5") int size,
+                       @RequestParam(defaultValue = "name") String sort,
+                       @RequestParam(defaultValue = "asc") String dir,
+                       Model model) {
+        Sort.Direction direction = dir.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(direction, sort));
         userService.getUserByEmail(principal.getUsername()).ifPresent(user -> {
-            model.addAttribute("categories", categoryService.getCategoriesByUserId(user.getId()));
+            Page<Category> categoryPage = categoryService.getCategoriesByUserId(user.getId(), pageRequest);
+            model.addAttribute("categories", categoryPage.getContent());
+            model.addAttribute("categoryPage", categoryPage);
             model.addAttribute("userId", user.getId());
         });
+        model.addAttribute("currentSort", sort);
+        model.addAttribute("currentDir", dir);
+        model.addAttribute("reverseDir", dir.equalsIgnoreCase("asc") ? "desc" : "asc");
+        model.addAttribute("currentSize", size);
         return "categories/list";
     }
 

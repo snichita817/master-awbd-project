@@ -1,6 +1,8 @@
 package com.awbd.financetracker.service;
 
 import com.awbd.financetracker.entity.Category;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +16,8 @@ public interface CategoryService {
     List<Category> getAllCategories();
 
     List<Category> getCategoriesByUserId(Long userId);
+
+    Page<Category> getCategoriesByUserId(Long userId, Pageable pageable);
 
     Category updateCategory(Long id, Category category);
 

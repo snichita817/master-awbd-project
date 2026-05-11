@@ -7,7 +7,8 @@ import com.awbd.financetracker.repository.SubscriptionRepository;
 import com.awbd.financetracker.repository.TransactionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cglib.core.Local;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,6 +68,12 @@ public class TransactionServiceImpl implements TransactionService {
     @Transactional(readOnly = true)
     public List<Transaction> getTransactionsByUserId(Long userId) {
         return transactionRepository.findByUserId(userId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Transaction> getTransactionsByUserId(Long userId, Pageable pageable) {
+        return transactionRepository.findPageByUserId(userId, pageable);
     }
 }
 

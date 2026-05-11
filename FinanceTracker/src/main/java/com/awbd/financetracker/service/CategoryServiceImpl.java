@@ -7,6 +7,8 @@ import com.awbd.financetracker.repository.CategoryRepository;
 import com.awbd.financetracker.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,6 +65,15 @@ public class CategoryServiceImpl implements CategoryService {
         }
 
         return categoryRepository.findByUserId(userId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Category> getCategoriesByUserId(Long userId, Pageable pageable) {
+        if (!userRepository.existsById(userId)) {
+            throw new ResourceNotFoundException("User not found with id: " + userId);
+        }
+        return categoryRepository.findByUserId(userId, pageable);
     }
 
     @Override

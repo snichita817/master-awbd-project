@@ -17,6 +17,9 @@
         </encoder>
     </appender>
 
+    <!-- File appenders are only active in dev/docker profiles -->
+    <springProfile name="dev,docker">
+
     <!-- Rolling file  -  ALL levels (INFO+) -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_PATH}/app.log</file>
@@ -47,6 +50,8 @@
             <charset>UTF-8</charset>
         </encoder>
     </appender>
+
+    </springProfile>
 
     <!-- ############################## PROFILES ############################## -->
 
