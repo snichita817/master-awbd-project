@@ -8,6 +8,7 @@ import com.awbd.financetracker.repository.SubscriptionShareRepository;
 import com.awbd.financetracker.service.CategoryService;
 import com.awbd.financetracker.service.PaymentMethodService;
 import com.awbd.financetracker.service.SubscriptionService;
+import com.awbd.financetracker.service.SubscriptionShareService;
 import com.awbd.financetracker.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -39,17 +40,20 @@ public class SubscriptionViewController {
     private final PaymentMethodService paymentMethodService;
     private final UserService userService;
     private final SubscriptionShareRepository subscriptionShareRepository;
+    private final SubscriptionShareService subscriptionShareService;
 
     public SubscriptionViewController(SubscriptionService subscriptionService,
                                       CategoryService categoryService,
                                       PaymentMethodService paymentMethodService,
                                       UserService userService,
-                                      SubscriptionShareRepository subscriptionShareRepository) {
+                                      SubscriptionShareRepository subscriptionShareRepository,
+                                      SubscriptionShareService subscriptionShareService) {
         this.subscriptionService = subscriptionService;
         this.categoryService = categoryService;
         this.paymentMethodService = paymentMethodService;
         this.userService = userService;
         this.subscriptionShareRepository = subscriptionShareRepository;
+        this.subscriptionShareService = subscriptionShareService;
     }
 
     @GetMapping
@@ -236,5 +240,15 @@ public class SubscriptionViewController {
         subscriptionService.deleteSubscription(id);
         redirectAttrs.addFlashAttribute("successMessage", "Subscription deleted.");
         return "redirect:/subscriptions";
+    }
+
+    @PostMapping("/{id}/leave-share")
+    public String leaveShare(@PathVariable Long id,
+                             @AuthenticationPrincipal UserDetails principal,
+                             RedirectAttributes redirectAttrs) {
+        userService.getUserByEmail(principal.getUsername()).ifPresent(user ->
+                subscriptionShareService.removeShare(id, user.getId()));
+        redirectAttrs.addFlashAttribute("successMessage", "You have left the shared subscription.");
+        return "redirect:/subscriptions?filter=received";
     }
 }

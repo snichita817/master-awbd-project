@@ -49,7 +49,12 @@ public class SubscriptionShareServiceImpl implements SubscriptionShareService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
-        SubscriptionShare share = new SubscriptionShare(subscription, user, percentageShare, fixedAmount);
+        // Enforce mutual exclusivity: fixed amount takes priority over percentage
+        boolean hasFixed = fixedAmount != null && fixedAmount.compareTo(BigDecimal.ZERO) > 0;
+        BigDecimal resolvedPercentage = hasFixed ? null : percentageShare;
+        BigDecimal resolvedFixed = hasFixed ? fixedAmount : null;
+
+        SubscriptionShare share = new SubscriptionShare(subscription, user, resolvedPercentage, resolvedFixed);
         SubscriptionShare saved = subscriptionShareRepository.save(share);
         log.info("SubscriptionShare assigned: subscriptionId={}, userId={}", subscriptionId, userId);
         return saved;
@@ -80,8 +85,10 @@ public class SubscriptionShareServiceImpl implements SubscriptionShareService {
                 .findById(new SubscriptionShareId(subscriptionId, userId))
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Share not found for subscription " + subscriptionId + " and user " + userId));
-        share.setPercentageShare(percentageShare);
-        share.setFixedAmount(fixedAmount);
+        // Enforce mutual exclusivity: fixed amount takes priority over percentage
+        boolean hasFixed = fixedAmount != null && fixedAmount.compareTo(BigDecimal.ZERO) > 0;
+        share.setPercentageShare(hasFixed ? null : percentageShare);
+        share.setFixedAmount(hasFixed ? fixedAmount : null);
         SubscriptionShare saved = subscriptionShareRepository.save(share);
         log.info("SubscriptionShare updated: subscriptionId={}, userId={}", subscriptionId, userId);
         return saved;

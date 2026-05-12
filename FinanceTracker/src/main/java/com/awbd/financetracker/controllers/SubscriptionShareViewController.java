@@ -2,11 +2,13 @@ package com.awbd.financetracker.controllers;
 
 import com.awbd.financetracker.entity.Subscription;
 import com.awbd.financetracker.entity.SubscriptionShare;
+import com.awbd.financetracker.entity.SubscriptionShareRequest;
 import com.awbd.financetracker.entity.User;
 import com.awbd.financetracker.enums.BillingFrequency;
 import com.awbd.financetracker.exception.DuplicateResourceException;
 import com.awbd.financetracker.exception.ResourceNotFoundException;
 import com.awbd.financetracker.service.SubscriptionService;
+import com.awbd.financetracker.service.SubscriptionShareRequestService;
 import com.awbd.financetracker.service.SubscriptionShareService;
 import com.awbd.financetracker.service.UserService;
 import org.springframework.security.access.AccessDeniedException;
@@ -28,13 +30,16 @@ import java.util.Map;
 public class SubscriptionShareViewController {
 
     private final SubscriptionShareService subscriptionShareService;
+    private final SubscriptionShareRequestService subscriptionShareRequestService;
     private final SubscriptionService subscriptionService;
     private final UserService userService;
 
     public SubscriptionShareViewController(SubscriptionShareService subscriptionShareService,
+                                           SubscriptionShareRequestService subscriptionShareRequestService,
                                            SubscriptionService subscriptionService,
                                            UserService userService) {
         this.subscriptionShareService = subscriptionShareService;
+        this.subscriptionShareRequestService = subscriptionShareRequestService;
         this.subscriptionService = subscriptionService;
         this.userService = userService;
     }
@@ -58,16 +63,19 @@ public class SubscriptionShareViewController {
         }
 
         List<SubscriptionShare> shares = subscriptionShareService.getSharesBySubscription(id);
+        List<SubscriptionShareRequest> shareRequests = subscriptionShareRequestService.getRequestsForSubscription(id);
         model.addAttribute("subscription", subscription);
         model.addAttribute("shares", shares);
+        model.addAttribute("shareRequests", shareRequests);
         model.addAttribute("subscriptionPrice", subscription.getPrice());
         model.addAttribute("subscriptionBillingFrequency", subscription.getBillingFrequency());
         model.addAttribute("monthlyAmounts", buildMonthlyAmountsForShares(subscription, shares));
+        model.addAttribute("requestMonthlyAmounts", buildMonthlyAmountsForRequests(subscription, shareRequests));
         return "subscriptions/shares";
     }
 
     // -------------------------------------------------------------------------
-    // POST /{id}/shares  -  add a share
+    // POST /{id}/shares  -  send a share request
     // -------------------------------------------------------------------------
 
     @PostMapping("/{id}/shares")
@@ -89,35 +97,62 @@ public class SubscriptionShareViewController {
             throw new AccessDeniedException("You do not own this subscription");
         }
 
-        // --- server-side validation ---
-
-        if (email == null || email.isBlank()) {
-            return reRenderShares(id, subscription, model, "Email is required");
-        }
-
-        User targetUser = userService.getUserByEmail(email).orElse(null);
-        if (targetUser == null) {
-            return reRenderShares(id, subscription, model, "No user found with that email");
-        }
-
-        if (targetUser.getId().equals(currentUser.getId())) {
-            return reRenderShares(id, subscription, model, "You cannot share a subscription with yourself");
-        }
-
-        boolean hasPercentage = percentageShare != null && percentageShare.compareTo(BigDecimal.ZERO) > 0;
-        boolean hasFixed = fixedAmount != null && fixedAmount.compareTo(BigDecimal.ZERO) > 0;
-        if (!hasPercentage && !hasFixed) {
-            return reRenderShares(id, subscription, model, "Provide either a percentage share or a fixed amount");
-        }
-
         try {
-            subscriptionShareService.assignShare(id, targetUser.getId(), percentageShare, fixedAmount);
+            subscriptionShareRequestService.createRequest(
+                    id, currentUser.getId(), email, percentageShare, fixedAmount);
+        } catch (ResourceNotFoundException ex) {
+            return reRenderShares(id, subscription, model, ex.getMessage());
         } catch (DuplicateResourceException ex) {
-            return reRenderShares(id, subscription, model, "That user already has a share on this subscription");
+            return reRenderShares(id, subscription, model, ex.getMessage());
         }
 
-        redirectAttrs.addFlashAttribute("successMessage", "Share added for " + targetUser.getEmail());
+        redirectAttrs.addFlashAttribute("successMessage", "Share request sent to " + email);
         return "redirect:/subscriptions/" + id + "/shares";
+    }
+
+    @GetMapping("/share-requests")
+    public String shareRequestsPage(@AuthenticationPrincipal UserDetails principal, Model model) {
+        User currentUser = userService.getUserByEmail(principal.getUsername())
+                .orElseThrow(() -> new ResourceNotFoundException("Current user not found"));
+        List<SubscriptionShareRequest> requests = subscriptionShareRequestService
+                .getPendingRequestsForUser(currentUser.getId());
+        model.addAttribute("requests", requests);
+        model.addAttribute("requestMonthlyAmounts", buildMonthlyAmountsForRequests(requests));
+        return "subscriptions/share-requests";
+    }
+
+    @PostMapping("/share-requests/{requestId}/accept")
+    public String acceptShareRequest(@PathVariable Long requestId,
+                                     @AuthenticationPrincipal UserDetails principal,
+                                     RedirectAttributes redirectAttrs) {
+        User currentUser = userService.getUserByEmail(principal.getUsername())
+                .orElseThrow(() -> new ResourceNotFoundException("Current user not found"));
+        subscriptionShareRequestService.acceptRequest(requestId, currentUser.getId());
+        redirectAttrs.addFlashAttribute("successMessage", "Share request accepted.");
+        return "redirect:/subscriptions/share-requests";
+    }
+
+    @PostMapping("/share-requests/{requestId}/decline")
+    public String declineShareRequest(@PathVariable Long requestId,
+                                      @AuthenticationPrincipal UserDetails principal,
+                                      RedirectAttributes redirectAttrs) {
+        User currentUser = userService.getUserByEmail(principal.getUsername())
+                .orElseThrow(() -> new ResourceNotFoundException("Current user not found"));
+        subscriptionShareRequestService.declineRequest(requestId, currentUser.getId());
+        redirectAttrs.addFlashAttribute("successMessage", "Share request declined.");
+        return "redirect:/subscriptions/share-requests";
+    }
+
+    @PostMapping("/share-requests/{requestId}/revoke")
+    public String revokeShareRequest(@PathVariable Long requestId,
+                                     @RequestParam Long subscriptionId,
+                                     @AuthenticationPrincipal UserDetails principal,
+                                     RedirectAttributes redirectAttrs) {
+        User currentUser = userService.getUserByEmail(principal.getUsername())
+                .orElseThrow(() -> new ResourceNotFoundException("Current user not found"));
+        subscriptionShareRequestService.revokeRequest(requestId, currentUser.getId());
+        redirectAttrs.addFlashAttribute("successMessage", "Share request revoked.");
+        return "redirect:/subscriptions/" + subscriptionId + "/shares";
     }
 
     // -------------------------------------------------------------------------
@@ -151,11 +186,14 @@ public class SubscriptionShareViewController {
 
     private String reRenderShares(Long id, Subscription subscription, Model model, String errorMessage) {
         List<SubscriptionShare> shares = subscriptionShareService.getSharesBySubscription(id);
+        List<SubscriptionShareRequest> shareRequests = subscriptionShareRequestService.getRequestsForSubscription(id);
         model.addAttribute("subscription", subscription);
         model.addAttribute("shares", shares);
+        model.addAttribute("shareRequests", shareRequests);
         model.addAttribute("subscriptionPrice", subscription.getPrice());
         model.addAttribute("subscriptionBillingFrequency", subscription.getBillingFrequency());
         model.addAttribute("monthlyAmounts", buildMonthlyAmountsForShares(subscription, shares));
+        model.addAttribute("requestMonthlyAmounts", buildMonthlyAmountsForRequests(subscription, shareRequests));
         model.addAttribute("errorMessage", errorMessage);
         return "subscriptions/shares";
     }
@@ -184,5 +222,24 @@ public class SubscriptionShareViewController {
             return fixedAmount;
         }
         return null;
+    }
+
+    private Map<Long, BigDecimal> buildMonthlyAmountsForRequests(Subscription subscription,
+                                                                  List<SubscriptionShareRequest> requests) {
+        Map<Long, BigDecimal> map = new LinkedHashMap<>();
+        for (SubscriptionShareRequest request : requests) {
+            map.put(request.getId(), computeMonthlyAmount(
+                    subscription, request.getPercentageShare(), request.getFixedAmount()));
+        }
+        return map;
+    }
+
+    private Map<Long, BigDecimal> buildMonthlyAmountsForRequests(List<SubscriptionShareRequest> requests) {
+        Map<Long, BigDecimal> map = new LinkedHashMap<>();
+        for (SubscriptionShareRequest request : requests) {
+            map.put(request.getId(), computeMonthlyAmount(
+                    request.getSubscription(), request.getPercentageShare(), request.getFixedAmount()));
+        }
+        return map;
     }
 }

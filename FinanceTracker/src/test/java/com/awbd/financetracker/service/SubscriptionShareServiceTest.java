@@ -121,7 +121,7 @@ class SubscriptionShareServiceTest {
     }
 
     @Test
-    void updateShare_existing_updatesValues() {
+    void updateShare_bothValuesSubmitted_keepsFixedAmountOnly() {
         SubscriptionShareId shareId = new SubscriptionShareId(100L, 1L);
         SubscriptionShare share = new SubscriptionShare(subscription, user,
                 new BigDecimal("50.00"), null);
@@ -132,7 +132,7 @@ class SubscriptionShareServiceTest {
         SubscriptionShare result = subscriptionShareService.updateShare(
                 100L, 1L, new BigDecimal("75.00"), new BigDecimal("5.00"));
 
-        assertThat(result.getPercentageShare()).isEqualByComparingTo("75.00");
+        assertThat(result.getPercentageShare()).isNull();
         assertThat(result.getFixedAmount()).isEqualByComparingTo("5.00");
     }
 }

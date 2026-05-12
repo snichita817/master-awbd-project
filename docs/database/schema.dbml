@@ -1,20 +1,21 @@
 Table budgets {
   id bigint [primary key]
   max_limit decimal [not null]
-  current_spending decimal
+  current_spending decimal [not null]
   category_id bigint [not null, unique, ref: - categories.id]
 }
 
 Table categories {
   id bigint [primary key]
-  name varchar(100) [not null, unique]
+  name varchar(100) [not null]
+  description varchar(500)
   user_id bigint [not null, ref: > users.id]
 }
 
 Table payment_methods {
   id bigint [primary key]
   type varchar [not null]
-  details varchar(255)
+  details varchar(255) [not null]
   user_id bigint [not null, ref: > users.id]
 }
 
@@ -22,6 +23,7 @@ Table users {
   id bigint [primary key]
   name varchar(100) [not null]
   email varchar [not null, unique]
+  password varchar [not null]
   monthly_income decimal [not null]
 }
 
@@ -51,6 +53,7 @@ Table subscriptions {
   price decimal [not null]
   billing_frequency varchar [not null]
   renewal_date datetime [not null]
+  user_id bigint [not null, ref: > users.id]
   category_id bigint [ref: > categories.id]
   payment_method_id bigint [ref: > payment_methods.id]
 }
@@ -64,4 +67,36 @@ Table subscription_shares {
   indexes {
     (subscription_id, user_id) [pk]
   }
+}
+
+Table subscription_share_requests {
+  id bigint [primary key]
+  subscription_id bigint [not null, ref: > subscriptions.id]
+  requested_by bigint [not null, ref: > users.id]
+  recipient_id bigint [not null, ref: > users.id]
+  percentage_share decimal
+  fixed_amount decimal
+  status varchar [not null, note: 'PENDING | ACCEPTED | DECLINED']
+  created_at datetime [not null]
+  responded_at datetime
+}
+
+Table tickets {
+  id bigint [primary key]
+  subject varchar(200) [not null]
+  message text [not null]
+  status varchar [not null, note: 'OPEN | IN_PROGRESS | RESOLVED']
+  resolution_note text
+  created_at datetime [not null]
+  updated_at datetime [not null]
+  resolved_by bigint [ref: > users.id, note: 'nullable - admin who last changed status']
+  submitted_by bigint [not null, ref: > users.id]
+}
+
+Table ticket_replies {
+  id bigint [primary key]
+  message text [not null]
+  created_at datetime [not null]
+  ticket_id bigint [not null, ref: > tickets.id]
+  author_id bigint [not null, ref: > users.id]
 }
