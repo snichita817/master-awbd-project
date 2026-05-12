@@ -11,7 +11,9 @@ import com.awbd.financetracker.service.SubscriptionService;
 import com.awbd.financetracker.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,6 +28,7 @@ import java.math.RoundingMode;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/subscriptions")
@@ -61,7 +64,25 @@ public class SubscriptionViewController {
             Sort.Direction direction = dir.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
             PageRequest pageRequest = PageRequest.of(page, size, Sort.by(direction, sort));
             Page<Subscription> subscriptionPage = subscriptionService.getSubscriptionsByUserId(user.getId(), pageRequest);
-            List<SubscriptionShare> sharedWithMe = subscriptionShareRepository.findByIdUserId(user.getId());
+            List<SubscriptionShare> allSharedWithMe = subscriptionShareRepository.findByIdUserId(user.getId());
+            List<SubscriptionShare> sharedWithMe = allSharedWithMe;
+            Set<Long> sharedIds = subscriptionShareRepository.findSharedSubscriptionIdsByOwnerId(user.getId());
+            List<Subscription> visibleSubscriptions = subscriptionPage.getContent();
+            Page<?> activePage = subscriptionPage;
+
+            if ("shared".equals(filter)) {
+                List<Subscription> sharedSubscriptions = subscriptionService.getSubscriptionsByUserId(user.getId()).stream()
+                        .filter(subscription -> sharedIds.contains(subscription.getId()))
+                        .toList();
+                Page<Subscription> sharedPage = paginateList(sharedSubscriptions, pageRequest);
+                visibleSubscriptions = sharedPage.getContent();
+                activePage = sharedPage;
+            } else if ("received".equals(filter)) {
+                Page<SubscriptionShare> sharedWithMePage = paginateList(allSharedWithMe, pageRequest);
+                visibleSubscriptions = List.of();
+                sharedWithMe = sharedWithMePage.getContent();
+                activePage = sharedWithMePage;
+            }
 
             Map<Long, BigDecimal> sharedMonthlyAmounts = new LinkedHashMap<>();
             for (SubscriptionShare share : sharedWithMe) {
@@ -79,10 +100,12 @@ public class SubscriptionViewController {
                 sharedMonthlyAmounts.put(share.getId().getSubscriptionId(), amount);
             }
 
-            model.addAttribute("subscriptions", subscriptionPage.getContent());
+            model.addAttribute("subscriptions", visibleSubscriptions);
             model.addAttribute("subscriptionPage", subscriptionPage);
-            model.addAttribute("sharedIds", subscriptionShareRepository.findSharedSubscriptionIdsByOwnerId(user.getId()));
+            model.addAttribute("activePage", activePage);
+            model.addAttribute("sharedIds", sharedIds);
             model.addAttribute("sharedWithMe", sharedWithMe);
+            model.addAttribute("sharedWithMeTotal", allSharedWithMe.size());
             model.addAttribute("sharedMonthlyAmounts", sharedMonthlyAmounts);
             model.addAttribute("filter", filter);
         });
@@ -91,6 +114,15 @@ public class SubscriptionViewController {
         model.addAttribute("reverseDir", dir.equalsIgnoreCase("asc") ? "desc" : "asc");
         model.addAttribute("currentSize", size);
         return "subscriptions/list";
+    }
+
+    private <T> Page<T> paginateList(List<T> items, Pageable pageable) {
+        int start = (int) pageable.getOffset();
+        if (start >= items.size()) {
+            return new PageImpl<>(List.of(), pageable, items.size());
+        }
+        int end = Math.min(start + pageable.getPageSize(), items.size());
+        return new PageImpl<>(items.subList(start, end), pageable, items.size());
     }
 
     @GetMapping("/new")

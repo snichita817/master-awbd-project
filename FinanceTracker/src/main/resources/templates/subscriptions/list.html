@@ -39,28 +39,28 @@
 
     <!-- Filter pills -->
     <div style="display:flex;gap:.5rem;margin-bottom:1.25rem;flex-wrap:wrap;">
-        <a th:href="@{/subscriptions(filter='all')}"
+        <a th:href="@{/subscriptions(filter='all',page=0)}"
            th:class="${filter == 'all'} ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm'">
             All
-            <span th:text="'(' + ${subscriptions.size() + sharedWithMe.size()} + ')'"
+            <span th:text="'(' + ${subscriptionPage.totalElements + sharedWithMeTotal} + ')'"
                   style="margin-left:.25rem;opacity:.8;"></span>
         </a>
-        <a th:href="@{/subscriptions(filter='mine')}"
+        <a th:href="@{/subscriptions(filter='mine',page=0)}"
            th:class="${filter == 'mine'} ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm'">
             Mine
-            <span th:text="'(' + ${subscriptions.size()} + ')'"
+            <span th:text="'(' + ${subscriptionPage.totalElements} + ')'"
                   style="margin-left:.25rem;opacity:.8;"></span>
         </a>
-        <a th:href="@{/subscriptions(filter='shared')}"
+        <a th:href="@{/subscriptions(filter='shared',page=0)}"
            th:class="${filter == 'shared'} ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm'">
             Shared
             <span th:text="'(' + ${sharedIds.size()} + ')'"
                   style="margin-left:.25rem;opacity:.8;"></span>
         </a>
-        <a th:href="@{/subscriptions(filter='received')}"
+        <a th:href="@{/subscriptions(filter='received',page=0)}"
            th:class="${filter == 'received'} ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm'">
             Shared with me
-            <span th:text="'(' + ${sharedWithMe.size()} + ')'"
+            <span th:text="'(' + ${sharedWithMeTotal} + ')'"
                   style="margin-left:.25rem;opacity:.8;"></span>
         </a>
     </div>
@@ -147,8 +147,8 @@
         </tbody>
     </table>
 
-    <!-- Pagination (applies to "mine" subscriptions) -->
-    <div th:replace="~{layout/pagination :: pagNav(${subscriptionPage}, '/subscriptions', ${currentSize}, ${currentSort}, ${currentDir}, ${filter})}"></div>
+    <!-- Pagination follows the active filter -->
+    <div th:replace="~{layout/pagination :: pagNav(${activePage}, '/subscriptions', ${currentSize}, ${currentSort}, ${currentDir}, ${filter})}"></div>
 </main>
 </body>
 </html>
