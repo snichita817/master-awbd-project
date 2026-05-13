@@ -1,16 +1,16 @@
 # Personal Finance & Subscription Tracker
 
-A Spring Boot web application that helps individuals and families manage recurring subscriptions, track expenses by category, and monitor their financial health. Users centralize subscriptions across services (Netflix, Spotify, cloud storage, etc.), set spending budgets per category, share subscription costs with other users, and gain insight into their disposable income and upcoming payment obligations.
+A Spring Boot web application that helps individuals and families manage recurring subscriptions, track expenses by category, and monitor their financial health. Users centralize subscriptions across different services (like Netflix, Spotify, cloud storage, etc.), set spending budgets per category, share subscription costs with other users, and gain insight into their disposable income and upcoming payment obligations.
 
 ---
 
 ## Project Description
 
-The platform turns the messy reality of household subscriptions into a single auditable view. The main capabilities are:
+The platform turns the messy reality of household subscriptions into a single and straight forward view. The main capabilities are:
 
 - **User profile & income management**: register, log in, maintain monthly income as the baseline for financial calculations.
-- **Subscription lifecycle**: full CRUD over recurring subscriptions, with monthly/yearly billing frequency, renewal date tracking, and automatic monthly-equivalent normalization.
-- **Subscription sharing**: many-to-many cost split between users, by either percentage or fixed amount, governed by a request/accept/decline workflow.
+- **Subscription lifecycle**: full CRUD over recurring subscriptions, with different billing frequencies, renewal date tracking, and automatic monthly-equivalent normalization.
+- **Subscription sharing**: cost split between users, by either percentage or fixed amount, aided by a request/accept/decline workflow.
 - **Categories & budgets**: custom categories with per-category spending limits; current spending is recomputed automatically when subscriptions are added, edited, or deleted.
 - **Payment methods & transactions**: register payment methods, link each subscription to one, and keep an immutable transaction history.
 - **Financial dashboard**: disposable income, upcoming renewals (next 7 days), and per-category breakdowns.
