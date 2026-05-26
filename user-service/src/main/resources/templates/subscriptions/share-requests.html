@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::main})}" lang="en">
+<head>
+    <title>Share Requests - Finance Tracker</title>
+</head>
+<body>
+<main>
+    <div class="page-header">
+        <h1>Share Requests</h1>
+        <a th:href="@{/subscriptions}" class="btn btn-secondary">Back to Subscriptions</a>
+    </div>
+
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+    <div th:if="${#lists.isEmpty(requests)}"
+         style="background:#fff;border-radius:8px;padding:2rem;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.08);color:#718096;">
+        No pending share requests.
+    </div>
+
+    <table th:unless="${#lists.isEmpty(requests)}">
+        <thead>
+        <tr>
+            <th>Subscription</th>
+            <th>Owner User ID</th>
+            <th>Share Type</th>
+            <th>Value</th>
+            <th>Monthly Cost (RON)</th>
+            <th>Created</th>
+            <th style="width:160px;">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="request : ${requests}">
+            <td th:text="${request.subscription.name}"></td>
+            <td th:text="${request.requestedByUserId}"></td>
+            <td>
+                <span th:if="${request.fixedAmount != null}" class="badge badge-green">Fixed</span>
+                <span th:if="${request.fixedAmount == null}" class="badge badge-blue">Percentage</span>
+            </td>
+            <td>
+                <span th:if="${request.fixedAmount != null}" th:text="${#numbers.formatDecimal(request.fixedAmount, 1, 2) + ' RON'}"></span>
+                <span th:if="${request.fixedAmount == null}" th:text="${#numbers.formatDecimal(request.percentageShare, 1, 2) + '%'}"></span>
+            </td>
+            <td th:text="${#numbers.formatDecimal(requestMonthlyAmounts[request.id] ?: 0, 1, 2)}"></td>
+            <td th:text="${#temporals.format(request.createdAt, 'dd MMM yyyy')}"></td>
+            <td>
+                <form th:action="@{/subscriptions/share-requests/{id}/accept(id=${request.id})}" method="post" style="display:inline;">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <button type="submit" class="btn btn-primary btn-sm">Accept</button>
+                </form>
+                <form th:action="@{/subscriptions/share-requests/{id}/decline(id=${request.id})}" method="post" style="display:inline;">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <button type="submit" class="btn btn-danger btn-sm">Decline</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

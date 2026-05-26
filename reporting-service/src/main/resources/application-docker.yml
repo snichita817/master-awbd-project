@@ -1,0 +1,3 @@
+services:
+  user-service-url: http://user-service:8080
+  finance-core-url: http://finance-core-service:8081

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::main})}" lang="en">
+<head>
+    <title>Users  -  Finance Tracker</title>
+</head>
+<body>
+<main>
+    <div class="page-header">
+        <h1>Users</h1>
+        <a th:href="@{/users/new}" class="btn btn-primary">+ New User</a>
+    </div>
+
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+    <form th:action="@{/users}" method="get" style="margin-bottom:1.25rem;display:flex;gap:.5rem;max-width:420px;">
+        <input type="text" name="search" th:value="${search}"
+               placeholder="Search by name or email…"
+               style="flex:1;padding:.45rem .75rem;border:1px solid #cbd5e0;border-radius:6px;font-size:.95rem;"/>
+        <button type="submit" class="btn btn-secondary">Search</button>
+        <a th:if="${!#strings.isEmpty(search)}" th:href="@{/users}" class="btn btn-secondary">Clear</a>
+    </form>
+
+    <div th:if="${#lists.isEmpty(users)}" style="background:#fff;border-radius:8px;padding:2rem;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.08);color:#718096;">
+        <span th:if="${!#strings.isEmpty(search)}">No users found for "<span th:text="${search}"></span>".</span>
+        <span th:if="${#strings.isEmpty(search)}">No users yet. <a th:href="@{/users/new}">Create the first one.</a></span>
+    </div>
+
+    <table th:unless="${#lists.isEmpty(users)}">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Monthly Income (RON)</th>
+                <th style="width:160px;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="u : ${users}">
+                <td th:text="${u.name}"></td>
+                <td th:text="${u.email}"></td>
+                <td th:text="${#numbers.formatDecimal(u.monthlyIncome, 1, 2)}"></td>
+                <td>
+                    <a th:href="@{/users/{id}/edit(id=${u.id})}" class="btn btn-secondary btn-sm">Edit</a>
+                    <form th:action="@{/users/{id}/delete(id=${u.id})}" method="post" style="display:inline;"
+                          onsubmit="return confirm('Delete this user?');">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

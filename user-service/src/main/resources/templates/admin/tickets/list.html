@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::main})}" lang="en">
+<head>
+    <title>Support Tickets (Admin) - Finance Tracker</title>
+</head>
+<body>
+<main>
+    <div class="page-header">
+        <h1>Support Tickets</h1>
+    </div>
+
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+
+    <!-- Status filter tabs -->
+    <div style="display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap;">
+        <a th:href="@{/admin/tickets}"
+           th:class="${activeStatus == null} ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm'">All</a>
+        <a th:each="s : ${statuses}"
+           th:href="@{/admin/tickets(status=${s.name()})}"
+           th:class="${activeStatus == s} ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm'"
+           th:text="${s.name().replace('_', ' ')}"></a>
+    </div>
+
+    <div th:if="${#lists.isEmpty(tickets)}"
+         style="background:#fff;border-radius:8px;padding:2rem;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.08);color:#718096;">
+        No tickets found.
+    </div>
+
+    <table th:unless="${#lists.isEmpty(tickets)}">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Subject</th>
+                <th>Submitted by</th>
+                <th>Status</th>
+                <th>Submitted</th>
+                <th style="width:100px;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="ticket : ${tickets}">
+                <td th:text="${ticket.id}"></td>
+                <td th:text="${ticket.subject}"></td>
+                <td th:text="${ticket.submittedBy.name}"></td>
+                <td>
+                    <span th:with="s=${ticket.status.name()}"
+                          th:class="${s == 'OPEN'} ? 'badge badge-blue' : (${s == 'IN_PROGRESS'} ? 'badge badge-orange' : 'badge badge-green')"
+                          th:text="${s.replace('_', ' ')}"></span>
+                </td>
+                <td th:text="${#temporals.format(ticket.createdAt, 'dd MMM yyyy')}"></td>
+                <td>
+                    <a th:href="@{/admin/tickets/{id}(id=${ticket.id})}" class="btn btn-secondary btn-sm">View</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

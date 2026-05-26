@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: reporting-service
+  profiles:
+    active: dev
+  jpa:
+    show-sql: true
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+
+logging:
+  config: classpath:logback-spring.xml
+
+server:
+  port: 8082
+
+services:
+  user-service-url: http://localhost:8080
+  finance-core-url: http://localhost:8081

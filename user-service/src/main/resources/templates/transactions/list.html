@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::main})}" lang="en">
+<head>
+    <title>Transactions - Finance Tracker</title>
+</head>
+<body>
+<main>
+    <div class="page-header">
+        <h1>Transactions</h1>
+        <a th:href="@{/transactions/new}" class="btn btn-primary">+ Record Transaction</a>
+    </div>
+
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+    <!-- Sort + Page size controls -->
+    <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;flex-wrap:wrap;">
+        <span style="font-weight:500;">Sort by:</span>
+        <a th:href="@{/transactions(page=0,size=${currentSize},sort='transactionDate',dir=${currentSort=='transactionDate'?reverseDir:'desc'})}"
+           th:class="${currentSort=='transactionDate'} ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm'">
+            Date <span th:if="${currentSort=='transactionDate'}" th:text="${currentDir=='asc'}?'↑':'↓'"></span>
+        </a>
+        <a th:href="@{/transactions(page=0,size=${currentSize},sort='amount',dir=${currentSort=='amount'?reverseDir:'desc'})}"
+           th:class="${currentSort=='amount'} ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm'">
+            Amount <span th:if="${currentSort=='amount'}" th:text="${currentDir=='asc'}?'↑':'↓'"></span>
+        </a>
+        <span style="margin-left:auto;">Page size:
+            <a th:each="s : ${#arrays.toArray({5,10,20})}"
+               th:href="@{/transactions(page=0,size=${s},sort=${currentSort},dir=${currentDir})}"
+               th:text="${s}"
+               th:class="${currentSize==s} ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm'"></a>
+        </span>
+    </div>
+
+    <div th:if="${#lists.isEmpty(transactions)}" style="background:#fff;border-radius:8px;padding:2rem;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.08);color:#718096;">
+        No transactions yet. <a th:href="@{/transactions/new}">Record your first one.</a>
+    </div>
+
+    <table th:unless="${#lists.isEmpty(transactions)}">
+        <thead>
+            <tr>
+                <th>Subscription</th>
+                <th>Amount (RON)</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="tx : ${transactions}">
+                <td th:text="${tx.subscription != null ? tx.subscription.name : ' - '}"></td>
+                <td th:text="${#numbers.formatDecimal(tx.amount, 1, 2)}"></td>
+                <td th:text="${#temporals.format(tx.transactionDate, 'dd MMM yyyy HH:mm')}"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div th:replace="~{layout/pagination :: pagNav(${txPage}, '/transactions', ${currentSize}, ${currentSort}, ${currentDir}, null)}"></div>
+</main>
+</body>
+</html>

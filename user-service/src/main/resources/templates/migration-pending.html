@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::main})}" lang="en">
+<head>
+    <title th:text="${featureName} + ' - Finance Tracker'">Migration Pending - Finance Tracker</title>
+</head>
+<body>
+<main>
+    <h1 th:text="${featureName}">Feature</h1>
+    <div class="card">
+        <p>This page is being reconnected to the new microservice APIs.</p>
+        <div class="form-actions">
+            <a class="btn btn-primary" th:href="@{/dashboard}">Back to dashboard</a>
+        </div>
+    </div>
+</main>
+</body>
+</html>

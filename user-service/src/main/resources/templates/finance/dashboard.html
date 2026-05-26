@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::main})}" lang="en">
+<head>
+    <title>Dashboard - Finance Tracker</title>
+</head>
+<body>
+<main>
+    <h1>Welcome, <span th:text="${user?.name} ?: 'there'">User</span></h1>
+
+    <div class="cards">
+        <div class="card-stat">
+            <h3>Monthly Income</h3>
+            <div class="value value-blue" th:text="${#numbers.formatDecimal(user?.monthlyIncome ?: 0, 1, 2)} + ' RON'">0.00 RON</div>
+        </div>
+        <div class="card-stat">
+            <h3>Total Monthly Spend</h3>
+            <div class="value value-orange" th:text="${#numbers.formatDecimal(totalMonthlySpend ?: 0, 1, 2)} + ' RON'">0.00 RON</div>
+        </div>
+        <div class="card-stat">
+            <h3>Disposable Income</h3>
+            <div class="value value-green" th:text="${#numbers.formatDecimal(disposableIncome ?: 0, 1, 2)} + ' RON'">0.00 RON</div>
+        </div>
+        <div class="card-stat">
+            <h3>Upcoming Renewals</h3>
+            <div class="value" th:text="${#lists.size(upcomingRenewals ?: {})}">0</div>
+        </div>
+    </div>
+
+    <h2>Upcoming Renewals (next 7 days)</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Billing</th>
+                <th>Renewal Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:if="${#lists.isEmpty(upcomingRenewals ?: {})}">
+                <td colspan="4" class="empty">No upcoming renewals.</td>
+            </tr>
+            <tr th:each="sub : ${upcomingRenewals}">
+                <td th:text="${sub.name}">Netflix</td>
+                <td th:text="${#numbers.formatDecimal(sub.price, 1, 2)} + ' RON'">9.99 RON</td>
+                <td><span class="badge badge-blue" th:text="${sub.billingFrequency}">MONTHLY</span></td>
+                <td th:text="${#temporals.format(sub.renewalDate, 'dd MMM yyyy')}">01 Jun 2026</td>
+            </tr>
+        </tbody>
+    </table>
+    <br>
+    <h2>Monthly Spend by Category</h2>
+    <table th:if="${spendingByCategory != null and !spendingByCategory.isEmpty()}">
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Monthly Cost (RON)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="entry : ${spendingByCategory}">
+                <td th:text="${entry.key}">Entertainment</td>
+                <td th:text="${#numbers.formatDecimal(entry.value, 1, 2)}">0.00</td>
+            </tr>
+        </tbody>
+    </table>
+    <div th:unless="${spendingByCategory != null and !spendingByCategory.isEmpty()}" style="background:#fff;border-radius:8px;padding:1.5rem;text-align:center;color:#718096;">
+        No subscriptions yet.
+    </div>
+</main>
+</body>
+</html>
