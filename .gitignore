@@ -1,5 +1,6 @@
 PLAN.md
 HELP.md
+.DS_Store
 target/
 /FinanceTracker/README.md
 !.mvn/wrapper/maven-wrapper.jar
@@ -41,4 +42,4 @@ build/
 /FinanceTracker/logs/
 
 # Test output logs
-/FinanceTracker/test_output.log
+test_output.log
