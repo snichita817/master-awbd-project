@@ -64,6 +64,22 @@ For `user-service`, public access is allowed for `health` and `info`; the rest o
 
 ---
 
+## CI/CD Pipeline
+
+The repository includes a GitHub Actions workflow in `.github/workflows/ci.yml`.
+
+On pushes and pull requests for `main`, `dev`, and `microservices-migration`, the pipeline:
+
+- runs the monolith test suite from `FinanceTracker/`
+- runs the `user-service` test suite
+- runs the `finance-core-service` test suite
+- runs the `reporting-service` test suite
+- builds the Docker Compose microservices stack after tests pass
+
+This covers automated build validation, automated test execution, and Docker containerization validation. A staging deployment job can be added later by extending the same workflow with a deploy hook or SSH-based Docker Compose deployment.
+
+---
+
 ## ER Diagram
 
 The diagram below was generated from [docs/database/schema.dbml](docs/database/schema.dbml) using [dbdiagram.io](https://dbdiagram.io).
