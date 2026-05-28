@@ -1,5 +1,7 @@
 # Personal Finance & Subscription Tracker
 
+[![CI](https://github.com/snichita817/master-awbd-project/actions/workflows/ci.yml/badge.svg?branch=microservices-migration)](https://github.com/snichita817/master-awbd-project/actions/workflows/ci.yml)
+
 A Spring Boot microservices application that helps individuals and families manage recurring subscriptions, track expenses by category, and monitor their financial health. Users centralize subscriptions across different services (like Netflix, Spotify, cloud storage, etc.), set spending budgets per category, share subscription costs with other users, and gain insight into their disposable income and upcoming payment obligations.
 
 ---
