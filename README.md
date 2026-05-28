@@ -68,7 +68,7 @@ Prometheus-format metrics are also exposed for scraping:
 
 The Docker Compose stack also starts Prometheus at `http://localhost:9090`. Its scrape configuration is stored in `monitoring/prometheus/prometheus.yml` and collects metrics from all three microservices through Docker Compose DNS names.
 
-Grafana is available at `http://localhost:3000` with default credentials `admin` / `admin`. The Prometheus datasource is provisioned automatically from `monitoring/grafana/provisioning/datasources/prometheus.yml`.
+Grafana is available at `http://localhost:3000` with default credentials `admin` / `admin`. The Prometheus datasource is provisioned automatically from `monitoring/grafana/provisioning/datasources/prometheus.yml`, and the Finance Tracker monitoring dashboard is loaded from `monitoring/grafana/dashboards/finance-tracker-microservices.json`.
 
 For `user-service`, public access is allowed for `health`, `info`, and `prometheus`; the rest of `/actuator/**` requires an admin session. The backend-only services currently expose their Actuator endpoints directly because they are intended to run inside the Docker Compose network during the microservices demo.
 
