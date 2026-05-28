@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.awbd</groupId>
-	<artifactId>finance-tracker</artifactId>
+	<artifactId>reporting-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Finance Tracker</name>
-	<description>Personal Finance and Subscription Tracker Application</description>
+	<name>Reporting Service</name>
+	<description>Reporting and dashboard service for Finance Tracker</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>

@@ -1,6 +1,6 @@
 spring:
   application:
-    name: Personal Finance & Subscription Tracker
+    name: user-service
   profiles:
     active: dev
   jpa:
