@@ -50,6 +50,20 @@ This satisfies the baseline optional requirement of migrating the monolith to at
 
 ---
 
+## Monitoring
+
+All three microservices expose basic Spring Boot Actuator endpoints:
+
+| Service | Health | Info | Metrics |
+|---|---|---|---|
+| `user-service` | `http://localhost:8080/actuator/health` | `http://localhost:8080/actuator/info` | `http://localhost:8080/actuator/metrics` |
+| `finance-core-service` | `http://localhost:8081/actuator/health` | `http://localhost:8081/actuator/info` | `http://localhost:8081/actuator/metrics` |
+| `reporting-service` | `http://localhost:8082/actuator/health` | `http://localhost:8082/actuator/info` | `http://localhost:8082/actuator/metrics` |
+
+For `user-service`, public access is allowed for `health` and `info`; the rest of `/actuator/**` requires an admin session. The backend-only services currently expose their Actuator endpoints directly because they are intended to run inside the Docker Compose network during the microservices demo.
+
+---
+
 ## ER Diagram
 
 The diagram below was generated from [docs/database/schema.dbml](docs/database/schema.dbml) using [dbdiagram.io](https://dbdiagram.io).

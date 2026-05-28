@@ -21,6 +21,18 @@ springdoc:
 logging:
   config: classpath:logback-spring.xml
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+  info:
+    env:
+      enabled: true
+
 server:
   port: 8082
 

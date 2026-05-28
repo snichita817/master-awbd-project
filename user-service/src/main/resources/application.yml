@@ -21,6 +21,18 @@ springdoc:
 logging:
   config: classpath:logback-spring.xml
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when_authorized
+  info:
+    env:
+      enabled: true
+
 services:
   finance-core-url: http://localhost:8081
   reporting-url: http://localhost:8082
