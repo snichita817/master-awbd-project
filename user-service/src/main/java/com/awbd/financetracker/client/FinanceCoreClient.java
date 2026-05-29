@@ -160,6 +160,14 @@ public class FinanceCoreClient {
                 });
     }
 
+    public List<SubscriptionDto> getAllSubscriptions(Long ownerUserId) {
+        return restClient.get()
+                .uri("/api/subscriptions/owner/{ownerUserId}/all", ownerUserId)
+                .retrieve()
+                .body(new ParameterizedTypeReference<>() {
+                });
+    }
+
     public SubscriptionDto getSubscription(Long id) {
         return restClient.get()
                 .uri("/api/subscriptions/{id}", id)
@@ -250,6 +258,32 @@ public class FinanceCoreClient {
                 .toBodilessEntity();
     }
 
+    public PageResponse<TransactionDto> getTransactions(Long ownerUserId, int page, int size, String sort, String dir) {
+        return restClient.get()
+                .uri(uriBuilder -> uriBuilder.path("/api/transactions/owner/{ownerUserId}")
+                        .queryParam("page", page)
+                        .queryParam("size", size)
+                        .queryParam("sort", sort)
+                        .queryParam("dir", dir)
+                        .build(ownerUserId))
+                .retrieve()
+                .body(new ParameterizedTypeReference<>() {
+                });
+    }
+
+    public TransactionDto createTransaction(Long subscriptionId, java.time.LocalDateTime transactionDate) {
+        return restClient.post()
+                .uri(uriBuilder -> {
+                    var builder = uriBuilder.path("/api/transactions/subscription/{subscriptionId}");
+                    if (transactionDate != null) {
+                        builder.queryParam("transactionDate", transactionDate);
+                    }
+                    return builder.build(subscriptionId);
+                })
+                .retrieve()
+                .body(TransactionDto.class);
+    }
+
     public record CategoryDto(Long id, String name, String description, Long ownerUserId) {
     }
 
@@ -311,6 +345,12 @@ public class FinanceCoreClient {
     public record ShareRequestCreateDto(String recipientEmail,
                                         java.math.BigDecimal percentageShare,
                                         java.math.BigDecimal fixedAmount) {
+    }
+
+    public record TransactionDto(Long id,
+                                 java.math.BigDecimal amount,
+                                 java.time.LocalDateTime transactionDate,
+                                 Long subscriptionId) {
     }
 
     public record PageResponse<T>(
