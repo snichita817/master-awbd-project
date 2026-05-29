@@ -77,6 +77,12 @@ services:
       finance-core-service:
         condition: service_started
 
+  zipkin:
+    image: openzipkin/zipkin:3
+    restart: unless-stopped
+    ports:
+      - "9411:9411"
+
   prometheus:
     image: prom/prometheus:v2.55.1
     restart: unless-stopped
@@ -90,6 +96,8 @@ services:
       finance-core-service:
         condition: service_started
       reporting-service:
+        condition: service_started
+      zipkin:
         condition: service_started
 
   grafana:

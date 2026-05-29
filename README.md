@@ -72,6 +72,15 @@ The Docker Compose stack also starts Prometheus at `http://localhost:9090`. Its 
 
 Grafana is available at `http://localhost:3000` with default credentials `admin` / `admin`. The Prometheus datasource is provisioned automatically from `monitoring/grafana/provisioning/datasources/prometheus.yml`, and the Finance Tracker monitoring dashboard is loaded from `monitoring/grafana/dashboards/finance-tracker-microservices.json`.
 
+Grafana alerting is configured for the main operational failure cases:
+
+- **Service Down**: detects when a scraped microservice target is no longer reachable.
+- **Downstream Service Errors**: detects failed inter-service calls caused by downstream service outages, connection failures, or timeouts.
+- **High Heap Memory Usage**: detects JVM heap pressure before it can degrade service stability.
+
+Zipkin is available at `http://localhost:9411` for distributed tracing. With tracing enabled on all three microservices, one request can be followed end-to-end across `user-service`, `reporting-service`, and `finance-core-service`.
+
+
 For `user-service`, public access is allowed for `health`, `info`, and `prometheus`; the rest of `/actuator/**` requires an admin session. The backend-only services currently expose their Actuator endpoints directly because they are intended to run inside the Docker Compose network during the microservices demo.
 
 ---
@@ -174,6 +183,7 @@ This starts:
 - `user-service`: `http://localhost:8080`
 - `finance-core-service`: `http://localhost:8081`
 - `reporting-service`: `http://localhost:8082`
+- `zipkin`: `http://localhost:9411`
 - `prometheus`: `http://localhost:9090`
 - `grafana`: `http://localhost:3000`
 - `user-db`: MySQL exposed on `localhost:3307`

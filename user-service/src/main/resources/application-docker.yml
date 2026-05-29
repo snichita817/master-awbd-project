@@ -14,3 +14,8 @@ spring:
 services:
   finance-core-url: http://finance-core-service:8081
   reporting-url: http://reporting-service:8082
+
+management:
+  zipkin:
+    tracing:
+      endpoint: http://zipkin:9411/api/v2/spans
