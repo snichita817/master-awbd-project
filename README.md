@@ -27,6 +27,8 @@ Full functional requirements are documented in [Functional_Requirements.md](Func
 
 The original monolithic implementation is kept in `FinanceTracker/` for reference, while the current optional microservices implementation is split into three independently built Spring Boot services:
 
+The migration approach is documented in [docs/strangler-fig-pattern.md](docs/strangler-fig-pattern.md). The browser-facing backend is documented in [docs/backend-for-frontend-pattern.md](docs/backend-for-frontend-pattern.md).
+
 | Service | Port | Responsibility |
 |---|---:|---|
 | `user-service` | `8080` | Authentication, users, roles, support tickets, Thymeleaf UI, and internal user lookup endpoints |
