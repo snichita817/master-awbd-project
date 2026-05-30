@@ -41,6 +41,7 @@ public class CategoryViewController {
         var categoryPage = financeCoreClient.getCategories(currentUser(principal).getId(), page, size, sort, dir);
         model.addAttribute("categoryPage", categoryPage);
         model.addAttribute("categories", categoryPage.content());
+        model.addAttribute("categoriesDataUnavailable", categoryPage.isDataUnavailable());
         model.addAttribute("currentPage", page);
         model.addAttribute("currentSize", size);
         model.addAttribute("currentSort", sort);

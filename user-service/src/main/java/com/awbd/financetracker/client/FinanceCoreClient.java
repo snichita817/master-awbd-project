@@ -3,8 +3,12 @@ package com.awbd.financetracker.client;
 import com.awbd.financetracker.enums.PaymentType;
 import com.awbd.financetracker.enums.BillingFrequency;
 import com.awbd.financetracker.enums.SubscriptionShareRequestStatus;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
@@ -13,6 +17,8 @@ import java.util.List;
 @Component
 public class FinanceCoreClient {
 
+    private static final Logger log = LoggerFactory.getLogger(FinanceCoreClient.class);
+
     private final RestClient restClient;
 
     public FinanceCoreClient(RestClient.Builder builder,
@@ -20,6 +26,8 @@ public class FinanceCoreClient {
         this.restClient = builder.baseUrl(financeCoreUrl).build();
     }
 
+    @CircuitBreaker(name = "financeCoreClient")
+    @Retry(name = "financeCoreClient", fallbackMethod = "getCategoriesFallback")
     public PageResponse<CategoryDto> getCategories(Long ownerUserId, int page, int size, String sort, String dir) {
         return restClient.get()
                 .uri(uriBuilder -> uriBuilder.path("/api/categories/owner/{ownerUserId}")
@@ -31,6 +39,11 @@ public class FinanceCoreClient {
                 .retrieve()
                 .body(new ParameterizedTypeReference<>() {
                 });
+    }
+
+    PageResponse<CategoryDto> getCategoriesFallback(Long ownerUserId, int page, int size, String sort, String dir, Throwable ex) {
+        log.warn("Finance core category lookup failed for ownerUserId={}. Returning empty category page.", ownerUserId, ex);
+        return PageResponse.unavailable(page, size);
     }
 
     public CategoryDto getCategory(Long id) {
@@ -360,6 +373,18 @@ public class FinanceCoreClient {
             long totalElements,
             int totalPages,
             boolean first,
-            boolean last) {
+            boolean last,
+            Boolean dataUnavailable) {
+        public static <T> PageResponse<T> empty(int page, int size) {
+            return new PageResponse<>(List.of(), page, size, 0, 0, true, true, false);
+        }
+
+        public static <T> PageResponse<T> unavailable(int page, int size) {
+            return new PageResponse<>(List.of(), page, size, 0, 0, true, true, true);
+        }
+
+        public boolean isDataUnavailable() {
+            return Boolean.TRUE.equals(dataUnavailable);
+        }
     }
 }

@@ -26,6 +26,7 @@ public class FinanceDashboardController {
                     .ifPresent(user -> {
                         model.addAttribute("user", user);
                         ReportingClient.DashboardReportDto report = reportingClient.getDashboard(user.getId());
+                        model.addAttribute("dashboardDataUnavailable", report.isDataUnavailable());
                         model.addAttribute("totalMonthlySpend", report.totalMonthlySubscriptionCost());
                         model.addAttribute("disposableIncome", report.disposableIncome());
                         model.addAttribute("upcomingRenewals", report.upcomingRenewals());

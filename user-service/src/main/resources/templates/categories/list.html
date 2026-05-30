@@ -13,6 +13,10 @@
 
     <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
     <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+    <div th:if="${categoriesDataUnavailable}"
+         style="background:#fed7d7;border:1px solid #fc8181;color:#9b2c2c;border-radius:6px;padding:.85rem 1rem;margin:1rem 0;">
+        We're having trouble loading your categories right now. Sorry about that.
+    </div>
 
     <!-- Sort + Page size controls -->
     <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;flex-wrap:wrap;">
@@ -33,11 +37,15 @@
         </span>
     </div>
 
-    <div th:if="${#lists.isEmpty(categories)}" style="background:#fff;border-radius:8px;padding:2rem;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.08);color:#718096;">
+    <div th:if="${categoriesDataUnavailable}" style="background:#fff;border-radius:8px;padding:2rem;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.08);color:#718096;">
+        Category data is currently unavailable. Please try again once the finance service is back online.
+    </div>
+
+    <div th:if="${!categoriesDataUnavailable and #lists.isEmpty(categories)}" style="background:#fff;border-radius:8px;padding:2rem;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.08);color:#718096;">
         No categories yet. <a th:href="@{/categories/new}">Create your first one.</a>
     </div>
 
-    <table th:unless="${#lists.isEmpty(categories)}">
+    <table th:unless="${categoriesDataUnavailable or #lists.isEmpty(categories)}">
         <thead>
             <tr>
                 <th>Name</th>
