@@ -27,11 +27,18 @@ jobs:
           java-version: "17"
           cache: maven
 
-      - name: Run monolith tests
+      - name: Run monolith verification
         working-directory: FinanceTracker
         run: |
           chmod +x mvnw
-          ./mvnw -B test -Dspring.profiles.active=test
+          ./mvnw -B verify -Dspring.profiles.active=test
+
+      - name: Upload monolith coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: monolith-jacoco-report
+          path: FinanceTracker/target/site/jacoco
+          if-no-files-found: warn
 
   test-user-service:
     name: Test user-service
@@ -47,11 +54,18 @@ jobs:
           java-version: "17"
           cache: maven
 
-      - name: Run user-service tests
+      - name: Run user-service verification
         working-directory: user-service
         run: |
           chmod +x mvnw
-          ./mvnw -B test -Dspring.profiles.active=test
+          ./mvnw -B verify -Dspring.profiles.active=test
+
+      - name: Upload user-service coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: user-service-jacoco-report
+          path: user-service/target/site/jacoco
+          if-no-files-found: warn
 
   test-finance-core-service:
     name: Test finance-core-service
@@ -67,11 +81,18 @@ jobs:
           java-version: "17"
           cache: maven
 
-      - name: Run finance-core-service tests
+      - name: Run finance-core-service verification
         working-directory: finance-core-service
         run: |
           chmod +x mvnw
-          ./mvnw -B test -Dspring.profiles.active=test
+          ./mvnw -B verify -Dspring.profiles.active=test
+
+      - name: Upload finance-core-service coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: finance-core-service-jacoco-report
+          path: finance-core-service/target/site/jacoco
+          if-no-files-found: warn
 
   test-reporting-service:
     name: Test reporting-service
@@ -87,11 +108,18 @@ jobs:
           java-version: "17"
           cache: maven
 
-      - name: Run reporting-service tests
+      - name: Run reporting-service verification
         working-directory: reporting-service
         run: |
           chmod +x mvnw
-          ./mvnw -B test -Dspring.profiles.active=test
+          ./mvnw -B verify -Dspring.profiles.active=test
+
+      - name: Upload reporting-service coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: reporting-service-jacoco-report
+          path: reporting-service/target/site/jacoco
+          if-no-files-found: warn
 
   docker-build:
     name: Build Docker Compose stack

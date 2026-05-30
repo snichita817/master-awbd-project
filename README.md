@@ -89,17 +89,21 @@ For `user-service`, public access is allowed for `health`, `info`, and `promethe
 
 ## CI/CD Pipeline
 
-The repository includes a GitHub Actions workflow in `.github/workflows/ci.yml`.
+The repository uses GitHub Actions for continuous integration. The workflow is defined in `.github/workflows/ci.yml` and runs on pushes and pull requests targeting `main`, `dev`, and `microservices-migration`.
 
-On pushes and pull requests for `main`, `dev`, and `microservices-migration`, the pipeline:
+The pipeline is split by application boundary:
 
-- runs the monolith test suite from `FinanceTracker/`
-- runs the `user-service` test suite
-- runs the `finance-core-service` test suite
-- runs the `reporting-service` test suite
-- builds the Docker Compose microservices stack after tests pass
+| Job | What it checks |
+|---|---|
+| `test-monolith` | Runs the original monolith tests from `FinanceTracker/` with the `test` profile. |
+| `test-user-service` | Runs the `user-service` tests, including user, security, and support ticket coverage. |
+| `test-finance-core-service` | Runs unit and integration tests for categories, budgets, subscriptions, transactions, and renewal logic. |
+| `test-reporting-service` | Runs reporting calculation tests for disposable income, subscription totals, dashboard values, and category spending. |
+| `docker-build` | Builds the Docker Compose microservices stack after all test jobs pass. |
 
-This covers automated build validation, automated test execution, and Docker containerization validation. A staging deployment job can be added later by extending the same workflow with a deploy hook or SSH-based Docker Compose deployment.
+The `docker-build` job depends on every test job. If one module fails, the Docker images are not built. This gives the project a simple quality gate: tests must pass before the microservices stack is considered buildable. Each verification job also uploads its JaCoCo HTML report as a GitHub Actions artifact.
+
+The current workflow covers automated test execution and Docker image build validation. Deployment is still manual: the stack is started locally with `docker compose up --build`. A future staging step could reuse the same Compose file on a remote host through SSH or a provider-specific deploy hook.
 
 ---
 
