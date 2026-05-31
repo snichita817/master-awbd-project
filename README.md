@@ -105,6 +105,10 @@ The `docker-build` job depends on every test job. If one module fails, the Docke
 
 The current workflow covers automated test execution and Docker image build validation. Deployment is still manual: the stack is started locally with `docker compose up --build`. A future staging step could reuse the same Compose file on a remote host through SSH or a provider-specific deploy hook.
 
+## AI Agents in Development
+
+The optional AI development bonus is documented in [docs/ai-agents-development.md](docs/ai-agents-development.md). It explains how Codex and GitHub Copilot were used for documentation, microservices migration support, repeated coding patterns, test completion, and requirement review.
+
 ---
 
 ## ER Diagram
