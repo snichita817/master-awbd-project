@@ -39,6 +39,12 @@ management:
     env:
       enabled: true
 
+info:
+  app:
+    name: user-service
+    description: Authentication, users, support tickets, and browser-facing UI for Finance Tracker.
+    version: 1.0.0
+
 services:
   finance-core-url: http://localhost:8081
   reporting-url: http://localhost:8082

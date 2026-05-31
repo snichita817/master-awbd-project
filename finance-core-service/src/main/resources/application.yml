@@ -39,6 +39,12 @@ management:
     env:
       enabled: true
 
+info:
+  app:
+    name: finance-core-service
+    description: Core finance domain APIs for categories, budgets, payment methods, subscriptions, shares, and transactions.
+    version: 1.0.0
+
 server:
   port: 8081
 

@@ -39,6 +39,12 @@ management:
     env:
       enabled: true
 
+info:
+  app:
+    name: reporting-service
+    description: Reporting and dashboard calculations for disposable income, renewals, and category spending.
+    version: 1.0.0
+
 server:
   port: 8082
 

@@ -50,7 +50,21 @@ Service communication is implemented over REST with Spring `RestClient`:
 
 Each service has its own `Dockerfile`, profile-specific configuration files (`application-dev.yml`, `application-test.yml`, `application-docker.yml`), and can be built separately with its Maven wrapper. In Docker, service URLs use Compose DNS names such as `http://finance-core-service:8081`; in local development, they use `localhost` ports.
 
-This satisfies the baseline optional requirement of migrating the monolith to at least three independent microservices. The current implementation uses direct configured REST URLs; service discovery, API gateway, distributed JWT security, resilience, and observability are listed as optional extension points.
+This satisfies the baseline optional requirement of migrating the monolith to at least three independent microservices. The current implementation uses direct configured REST URLs. Service discovery, API gateway, distributed JWT security, and resilience are listed as optional extension points; observability is implemented with Actuator, Prometheus, Grafana, and Zipkin.
+
+---
+
+## API Documentation
+
+Each service exposes OpenAPI documentation through Springdoc. After starting the Docker Compose stack, the Swagger UI pages are available at:
+
+| Service | Swagger UI | OpenAPI JSON |
+|---|---|---|
+| `user-service` | `http://localhost:8080/swagger-ui.html` | `http://localhost:8080/api-docs` |
+| `finance-core-service` | `http://localhost:8081/swagger-ui.html` | `http://localhost:8081/api-docs` |
+| `reporting-service` | `http://localhost:8082/swagger-ui.html` | `http://localhost:8082/api-docs` |
+
+The `user-service` Swagger and OpenAPI endpoints are publicly accessible so the API contract can be inspected without logging in. Application pages and protected business actions still use the normal Spring Security configuration.
 
 ---
 
@@ -81,7 +95,6 @@ Grafana alerting is configured for the main operational failure cases:
 - **High Heap Memory Usage**: detects JVM heap pressure before it can degrade service stability.
 
 Zipkin is available at `http://localhost:9411` for distributed tracing. With tracing enabled on all three microservices, one request can be followed end-to-end across `user-service`, `reporting-service`, and `finance-core-service`.
-
 
 For `user-service`, public access is allowed for `health`, `info`, and `prometheus`; the rest of `/actuator/**` requires an admin session. The backend-only services currently expose their Actuator endpoints directly because they are intended to run inside the Docker Compose network during the microservices demo.
 
@@ -121,7 +134,7 @@ The diagram below was generated from [docs/database/schema.dbml](docs/database/s
 
 - **`@OneToOne`**: `Budget` <-> `Category`
 - **`@OneToMany` / `@ManyToOne`**: `User` -> `Subscription`, `User` -> `Category`, `User` -> `PaymentMethod`, `Subscription` -> `Transaction`, `Subscription` -> `Category`, `Subscription` -> `PaymentMethod`, `Ticket` -> `TicketReply`, etc.
-- **`@ManyToMany`** — `User` <<->> `Role` (via `user_roles`); `User` <<->> `Subscription` (via `subscription_shares` with extra columns)
+- **`@ManyToMany`** - `User` <<->> `Role` (via `user_roles`); `User` <<->> `Subscription` (via `subscription_shares` with extra columns)
 
 ---
 
@@ -205,4 +218,30 @@ The UI is served by `user-service` at `http://localhost:8080`.
 
 ## Screenshots
 
-> _To be added_
+Current visual documentation included in the repository:
+
+- [ERD.png](ERD.png) - full domain entity relationship diagram.
+- [FinanceTracker/Database_Schema.png](FinanceTracker/Database_Schema.png) - original monolith database schema.
+- [user-service/Database_Schema.png](user-service/Database_Schema.png) - user-service database schema.
+- [finance-core-service/Database_Schema.png](finance-core-service/Database_Schema.png) - finance-core-service database schema.
+- [reporting-service/Database_Schema.png](reporting-service/Database_Schema.png) - reporting-service schema view.
+
+UI screenshots to capture for the final submission:
+
+- Login page and dashboard from `user-service`.
+- Finance CRUD pages such as categories, subscriptions, transactions, budgets, and payment methods.
+- Support ticket user/admin views.
+- Swagger UI, Prometheus targets, Grafana dashboard, and Zipkin trace view.
+
+---
+
+## Team Contributions
+
+This project was developed individually by me. Main contribution areas:
+
+- Designed and implemented the original Spring Boot monolith.
+- Migrated the application toward the optional microservices architecture.
+- Implemented the `user-service`, `finance-core-service`, and `reporting-service` boundaries.
+- Added Docker Compose orchestration, service configuration, monitoring, tracing, and CI verification.
+- Wrote and reviewed the README, architecture documentation, AI development documentation, and requirement mapping.
+- Created and extended tests for the monolith and the three microservices, then verified changes by running the relevant unit/service test suites.
