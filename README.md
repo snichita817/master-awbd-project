@@ -218,20 +218,105 @@ The UI is served by `user-service` at `http://localhost:8080`.
 
 ## Screenshots
 
-Current visual documentation included in the repository:
+### Login Page
 
-- [ERD.png](ERD.png) - full domain entity relationship diagram.
-- [FinanceTracker/Database_Schema.png](FinanceTracker/Database_Schema.png) - original monolith database schema.
-- [user-service/Database_Schema.png](user-service/Database_Schema.png) - user-service database schema.
-- [finance-core-service/Database_Schema.png](finance-core-service/Database_Schema.png) - finance-core-service database schema.
-- [reporting-service/Database_Schema.png](reporting-service/Database_Schema.png) - reporting-service schema view.
+![Login page](docs/ui/login-page.png)
 
-UI screenshots to capture for the final submission:
+The login page shows the custom Spring Security entry point with email/password authentication, remember-me support, and a link to user registration.
 
-- Login page and dashboard from `user-service`.
-- Finance CRUD pages such as categories, subscriptions, transactions, budgets, and payment methods.
-- Support ticket user/admin views.
-- Swagger UI, Prometheus targets, Grafana dashboard, and Zipkin trace view.
+### Registration Page
+
+![Register page](docs/ui/register-page.png)
+
+### Dashboard
+
+![Dashboard](docs/ui/dashboard.png)
+
+The dashboard is served by `user-service` and populated through `reporting-service`. It shows monthly income, monthly subscription spend, disposable income, upcoming renewals, and category spending.
+
+### Subscription Management
+
+![Subscriptions](docs/ui/subscriptions.png)
+
+The subscriptions page shows the main finance workflow delegated from `user-service` to `finance-core-service`.
+
+### Categories
+
+![Categories](docs/ui/categories.png)
+
+Categories are managed per user and are used by subscriptions, budgets, dashboard reporting, and spending summaries.
+
+### Payment Methods
+
+![Payment methods](docs/ui/payment-methods.png)
+
+Payment methods can be created and linked to subscriptions, keeping the finance data organized around the way each recurring service is paid.
+
+### Subscription Sharing
+
+![Subscription sharing](docs/ui/subscription-sharing.png)
+
+This page shows the cost-sharing feature for a subscription.
+
+### Share Requests
+
+![Share requests](docs/ui/share-requests-pending.png)
+
+The share requests page shows the pending accept/decline workflow from the recipient side.
+
+### Budgets
+
+![Budgets](docs/ui/budgets.png)
+
+Budgets show spending limits and current spending per category.
+
+### Transactions
+
+![Transactions](docs/ui/transactions.png)
+
+Transactions show the payment history linked to subscriptions.
+
+### Support Tickets
+
+![Support ticket form](docs/ui/support-ticket-form.png)
+
+![My support tickets](docs/ui/my-support-tickets.png)
+
+Users can open support tickets and follow replies/status updates.
+
+### Admin Ticket Console
+
+![Admin tickets](docs/ui/admin-tickets.png)
+
+![Admin ticket detail](docs/ui/admin-ticket-detail.png)
+
+Admins can review tickets, update statuses, and reply to users.
+
+### Admin Users
+
+![Admin users](docs/ui/admin-users.png)
+
+The admin users page shows the administrative user-management view.
+
+### Swagger UI
+
+![User service Swagger UI](docs/ui/swagger-user-service.png)
+
+Each microservice exposes Swagger/OpenAPI documentation. Additional generated Swagger screenshots are available for [finance-core-service](docs/ui/swagger-finance-core-service.png) and [reporting-service](docs/ui/swagger-reporting-service.png).
+
+### Prometheus Targets
+
+![Prometheus targets](docs/ui/prometheus-targets.png)
+
+Prometheus confirms that the microservices are being scraped for metrics.
+
+### Zipkin
+
+![Zipkin](docs/ui/zipkin.png)
+
+Zipkin is available for distributed tracing across service calls.
+
+The Grafana dashboard is available at `http://localhost:3000`.
 
 ---
 

@@ -6,6 +6,7 @@ import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -27,6 +28,7 @@ public class SubscriptionForm {
 
     @NotNull(message = "Renewal date is required")
     @FutureOrPresent(message = "Renewal date must be today or in the future")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate renewalDate;
 
     private Long categoryId;

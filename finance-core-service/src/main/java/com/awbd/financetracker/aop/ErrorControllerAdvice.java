@@ -5,6 +5,7 @@ import com.awbd.financetracker.exception.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -52,6 +53,17 @@ public class ErrorControllerAdvice {
         return mav;
     }
 
+    @ExceptionHandler(AccessDeniedException.class)
+    public Object handleAccessDenied(AccessDeniedException e, HttpServletRequest request) {
+        log.warn("Access denied: {} - {}", request.getRequestURI(), e.getMessage());
+        if (isJsonRequest(request)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        }
+        ModelAndView mav = new ModelAndView("error/500");
+        mav.addObject("message", e.getMessage());
+        return mav;
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<String> handle(MethodArgumentNotValidException e) {
         String errors = e.getBindingResult().getAllErrors().stream()
@@ -89,6 +101,7 @@ public class ErrorControllerAdvice {
 
     private boolean isJsonRequest(HttpServletRequest request) {
         String accept = request.getHeader("Accept");
-        return accept != null && accept.contains("application/json");
+        return request.getRequestURI().startsWith("/api/")
+                || accept != null && accept.contains("application/json");
     }
 }

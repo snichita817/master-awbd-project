@@ -89,6 +89,7 @@ public class ErrorControllerAdvice {
 
     private boolean isJsonRequest(HttpServletRequest request) {
         String accept = request.getHeader("Accept");
-        return accept != null && accept.contains("application/json");
+        return request.getRequestURI().startsWith("/api/")
+                || accept != null && accept.contains("application/json");
     }
 }

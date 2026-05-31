@@ -7,6 +7,8 @@ import com.awbd.financetracker.exception.ResourceNotFoundException;
 import com.awbd.financetracker.repository.CategoryRepository;
 import com.awbd.financetracker.repository.PaymentMethodRepository;
 import com.awbd.financetracker.repository.SubscriptionRepository;
+import com.awbd.financetracker.repository.SubscriptionShareRepository;
+import com.awbd.financetracker.repository.SubscriptionShareRequestRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -28,17 +30,23 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final SubscriptionRepository subscriptionRepository;
     private final PaymentMethodRepository paymentMethodRepository;
     private final CategoryRepository categoryRepository;
+    private final SubscriptionShareRepository subscriptionShareRepository;
+    private final SubscriptionShareRequestRepository subscriptionShareRequestRepository;
     private final BudgetService budgetService;
     private final UserDirectoryClient userDirectoryClient;
 
     public SubscriptionServiceImpl(SubscriptionRepository subscriptionRepository,
                                    PaymentMethodRepository paymentMethodRepository,
                                    CategoryRepository categoryRepository,
+                                   SubscriptionShareRepository subscriptionShareRepository,
+                                   SubscriptionShareRequestRepository subscriptionShareRequestRepository,
                                    BudgetService budgetService,
                                    UserDirectoryClient userDirectoryClient) {
         this.subscriptionRepository = subscriptionRepository;
         this.paymentMethodRepository = paymentMethodRepository;
         this.categoryRepository = categoryRepository;
+        this.subscriptionShareRepository = subscriptionShareRepository;
+        this.subscriptionShareRequestRepository = subscriptionShareRequestRepository;
         this.budgetService = budgetService;
         this.userDirectoryClient = userDirectoryClient;
     }
@@ -140,6 +148,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         Subscription subscription = subscriptionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Subscription not found with id: " + id));
         budgetService.removeSubscriptionFromBudget(subscription.getCategory(), subscription.getPrice(), subscription.getBillingFrequency());
+        subscriptionShareRequestRepository.deleteBySubscriptionId(id);
+        subscriptionShareRepository.deleteByIdSubscriptionId(id);
         subscriptionRepository.delete(subscription);
         log.info("Subscription deleted: id={}", id);
     }

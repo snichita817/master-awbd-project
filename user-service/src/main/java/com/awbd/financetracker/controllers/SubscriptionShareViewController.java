@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.client.RestClientResponseException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -54,12 +55,16 @@ public class SubscriptionShareViewController {
                                      @RequestParam(required = false) BigDecimal percentageShare,
                                      @RequestParam(required = false) BigDecimal fixedAmount,
                                      RedirectAttributes redirectAttributes) {
-        financeCoreClient.createShareRequest(
-                id,
-                currentUser(principal).getId(),
-                new FinanceCoreClient.ShareRequestCreateDto(recipientEmail, percentageShare, fixedAmount)
-        );
-        redirectAttributes.addFlashAttribute("successMessage", "Share request sent.");
+        try {
+            financeCoreClient.createShareRequest(
+                    id,
+                    currentUser(principal).getId(),
+                    new FinanceCoreClient.ShareRequestCreateDto(recipientEmail, percentageShare, fixedAmount)
+            );
+            redirectAttributes.addFlashAttribute("successMessage", "Share request sent.");
+        } catch (RestClientResponseException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", serviceError(e));
+        }
         return "redirect:/subscriptions/" + id + "/shares";
     }
 
@@ -76,8 +81,12 @@ public class SubscriptionShareViewController {
     public String accept(@AuthenticationPrincipal UserDetails principal,
                          @PathVariable Long requestId,
                          RedirectAttributes redirectAttributes) {
-        financeCoreClient.acceptShareRequest(requestId, currentUser(principal).getId());
-        redirectAttributes.addFlashAttribute("successMessage", "Share request accepted.");
+        try {
+            financeCoreClient.acceptShareRequest(requestId, currentUser(principal).getId());
+            redirectAttributes.addFlashAttribute("successMessage", "Share request accepted.");
+        } catch (RestClientResponseException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", serviceError(e));
+        }
         return "redirect:/subscriptions/share-requests";
     }
 
@@ -85,8 +94,12 @@ public class SubscriptionShareViewController {
     public String decline(@AuthenticationPrincipal UserDetails principal,
                           @PathVariable Long requestId,
                           RedirectAttributes redirectAttributes) {
-        financeCoreClient.declineShareRequest(requestId, currentUser(principal).getId());
-        redirectAttributes.addFlashAttribute("successMessage", "Share request declined.");
+        try {
+            financeCoreClient.declineShareRequest(requestId, currentUser(principal).getId());
+            redirectAttributes.addFlashAttribute("successMessage", "Share request declined.");
+        } catch (RestClientResponseException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", serviceError(e));
+        }
         return "redirect:/subscriptions/share-requests";
     }
 
@@ -95,8 +108,12 @@ public class SubscriptionShareViewController {
                          @PathVariable Long requestId,
                          @RequestParam(required = false) Long subscriptionId,
                          RedirectAttributes redirectAttributes) {
-        financeCoreClient.revokeShareRequest(requestId, currentUser(principal).getId());
-        redirectAttributes.addFlashAttribute("successMessage", "Share request revoked.");
+        try {
+            financeCoreClient.revokeShareRequest(requestId, currentUser(principal).getId());
+            redirectAttributes.addFlashAttribute("successMessage", "Share request revoked.");
+        } catch (RestClientResponseException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", serviceError(e));
+        }
         return subscriptionId == null ? "redirect:/subscriptions" : "redirect:/subscriptions/" + subscriptionId + "/shares";
     }
 
@@ -104,8 +121,12 @@ public class SubscriptionShareViewController {
     public String removeShare(@PathVariable Long id,
                               @PathVariable Long userId,
                               RedirectAttributes redirectAttributes) {
-        financeCoreClient.removeShare(id, userId);
-        redirectAttributes.addFlashAttribute("successMessage", "Share removed.");
+        try {
+            financeCoreClient.removeShare(id, userId);
+            redirectAttributes.addFlashAttribute("successMessage", "Share removed.");
+        } catch (RestClientResponseException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", serviceError(e));
+        }
         return "redirect:/subscriptions/" + id + "/shares";
     }
 
@@ -113,8 +134,12 @@ public class SubscriptionShareViewController {
     public String leaveShare(@AuthenticationPrincipal UserDetails principal,
                              @PathVariable Long id,
                              RedirectAttributes redirectAttributes) {
-        financeCoreClient.removeShare(id, currentUser(principal).getId());
-        redirectAttributes.addFlashAttribute("successMessage", "You left the shared subscription.");
+        try {
+            financeCoreClient.removeShare(id, currentUser(principal).getId());
+            redirectAttributes.addFlashAttribute("successMessage", "You left the shared subscription.");
+        } catch (RestClientResponseException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", serviceError(e));
+        }
         return "redirect:/subscriptions";
     }
 
@@ -141,6 +166,14 @@ public class SubscriptionShareViewController {
             base = base.divide(BigDecimal.valueOf(12), 2, RoundingMode.HALF_UP);
         }
         return base.multiply(percentage).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+    }
+
+    private String serviceError(RestClientResponseException e) {
+        String body = e.getResponseBodyAsString();
+        if (body != null && !body.isBlank() && !body.trim().startsWith("<")) {
+            return body;
+        }
+        return "Share operation failed. Please check the selected subscription and user.";
     }
 
     private User currentUser(UserDetails principal) {

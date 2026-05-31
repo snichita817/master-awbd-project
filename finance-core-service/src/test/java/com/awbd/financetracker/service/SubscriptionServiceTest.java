@@ -10,6 +10,8 @@ import com.awbd.financetracker.exception.ResourceNotFoundException;
 import com.awbd.financetracker.repository.CategoryRepository;
 import com.awbd.financetracker.repository.PaymentMethodRepository;
 import com.awbd.financetracker.repository.SubscriptionRepository;
+import com.awbd.financetracker.repository.SubscriptionShareRepository;
+import com.awbd.financetracker.repository.SubscriptionShareRequestRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,6 +40,12 @@ class SubscriptionServiceTest {
     private CategoryRepository categoryRepository;
 
     @Mock
+    private SubscriptionShareRepository subscriptionShareRepository;
+
+    @Mock
+    private SubscriptionShareRequestRepository subscriptionShareRequestRepository;
+
+    @Mock
     private BudgetService budgetService;
 
     @Mock
@@ -51,6 +59,8 @@ class SubscriptionServiceTest {
                 subscriptionRepository,
                 paymentMethodRepository,
                 categoryRepository,
+                subscriptionShareRepository,
+                subscriptionShareRequestRepository,
                 budgetService,
                 userDirectoryClient
         );
@@ -131,6 +141,8 @@ class SubscriptionServiceTest {
         subscriptionService.deleteSubscription(20L);
 
         verify(budgetService).removeSubscriptionFromBudget(category, new BigDecimal("49.99"), BillingFrequency.MONTHLY);
+        verify(subscriptionShareRequestRepository).deleteBySubscriptionId(20L);
+        verify(subscriptionShareRepository).deleteByIdSubscriptionId(20L);
         verify(subscriptionRepository).delete(subscription);
     }
 

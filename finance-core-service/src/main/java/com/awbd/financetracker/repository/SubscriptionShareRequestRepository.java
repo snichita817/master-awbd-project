@@ -28,4 +28,6 @@ public interface SubscriptionShareRequestRepository extends JpaRepository<Subscr
 
     @EntityGraph(attributePaths = {"subscription", "subscription.category", "subscription.paymentMethod"})
     Optional<SubscriptionShareRequest> findByIdAndRequestedByUserId(Long id, Long requestedByUserId);
+
+    void deleteBySubscriptionId(Long subscriptionId);
 }

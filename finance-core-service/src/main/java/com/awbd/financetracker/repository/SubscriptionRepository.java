@@ -14,6 +14,10 @@ import java.util.Optional;
 
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
 
+    @Override
+    @EntityGraph(attributePaths = {"category", "paymentMethod"})
+    Optional<Subscription> findById(Long id);
+
     @EntityGraph(attributePaths = {"category", "paymentMethod"})
     List<Subscription> findByOwnerUserId(Long ownerUserId);
 
