@@ -1,0 +1,1396 @@
+{
+	"info": {
+		"_postman_id": "5f490851-d283-4b85-be3d-126056816fad",
+		"name": "My Collection Copy",
+		"description": "### Welcome to Postman! This is your first collection. \n\nCollections are your starting point for building and testing APIs. You can use this one to:\n\n• Group related requests\n• Test your API in real-world scenarios\n• Document and share your requests\n\nUpdate the name and overview whenever you’re ready to make it yours.\n\n[Learn more about Postman Collections.](https://learning.postman.com/docs/collections/collections-overview/)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "51263642",
+		"_collection_link": "https://snichita817-256700.postman.co/workspace/Nichita's-Workspace~c224b7b9-d8ba-456e-8db6-551603455b98/collection/51263642-5f490851-d283-4b85-be3d-126056816fad?action=share&source=collection_link&creator=51263642"
+	},
+	"item": [
+		{
+			"name": "App Walkthrough",
+			"item": [
+				{
+					"name": "Create a User",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Bill Murray\",\n    \"email\": \"bill.murray@mail.com\",\n    \"monthlyIncome\": 5000.00\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/api/users"
+					},
+					"response": []
+				},
+				{
+					"name": "Create a Second User",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Jane Murray\",\n    \"email\": \"jane.murray@mail.com\",\n    \"monthlyIncome\": 5800.00\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/api/users"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User by ID",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/api/users/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Users",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/api/users"
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Bill Murray\",\n    \"email\": \"bill.murray@example.com\",\n    \"monthlyIncome\": 5500.00\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/api/users/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Create \"Entertainment\" Category",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Entertaiment\",\n    \"description\": \"Fun stuff, what we all love\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/api/categories/user/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Create \"Utilities\" Category",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Utilities\",\n    \"description\": \"Essential services like cloud storage\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/api/categories/user/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Create \"Productivity\" Category",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Productivity\",\n    \"description\": \"Work and productivity tools\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/api/categories/user/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Categories for User",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/api/categories/user/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Add Credit Card",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"type\": \"CREDIT_CARD\",\n    \"details\": \"Visa ending in 1111\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/api/payment-methods/user/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Add PayPal Account",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"type\": \"PAYPAL\",\n    \"details\": \"bill.murray@paypal.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/api/payment-methods/user/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Add Bank Transfer",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"type\": \"BANK_TRANSFER\",\n    \"details\": \"ING Bank - RO49AAAA1B31007593840000\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/api/payment-methods/user/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Payment Methods by Type",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/api/payment-methods/user/1/type/CREDIT_CARD"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Netflix Subscription (Monthly)",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Netflix Premium\",\n    \"price\": 15.99,\n    \"billingFrequency\": \"MONTHLY\",\n    \"renewalDate\": \"2026-01-12\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/subscriptions/user/1?categoryId=2&paymentMethodId=1",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"subscriptions",
+								"user",
+								"1"
+							],
+							"query": [
+								{
+									"key": "categoryId",
+									"value": "2"
+								},
+								{
+									"key": "paymentMethodId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Spotify Subscription (Monthly)",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Spotify Family\",\n    \"price\": 14.99,\n    \"billingFrequency\": \"MONTHLY\",\n    \"renewalDate\": \"2026-01-13\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/subscriptions/user/1?categoryId=1&paymentMethodId=2",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"subscriptions",
+								"user",
+								"1"
+							],
+							"query": [
+								{
+									"key": "categoryId",
+									"value": "1"
+								},
+								{
+									"key": "paymentMethodId",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create iCloud Storage (Yearly)",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"iCloud Storage 200GB\",\n    \"price\": 35.88,\n    \"billingFrequency\": \"YEARLY\",\n    \"renewalDate\": \"2026-06-15\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/subscriptions/user/1?categoryId=2&paymentMethodId=1",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"subscriptions",
+								"user",
+								"1"
+							],
+							"query": [
+								{
+									"key": "categoryId",
+									"value": "2"
+								},
+								{
+									"key": "paymentMethodId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Microsoft 365 (Yearly)",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Microsoft 365 Family\",\n    \"price\": 99.99,\n    \"billingFrequency\": \"YEARLY\",\n    \"renewalDate\": \"2026-03-20\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/subscriptions/user/1?categoryId=3&paymentMethodId=1",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"subscriptions",
+								"user",
+								"1"
+							],
+							"query": [
+								{
+									"key": "categoryId",
+									"value": "3"
+								},
+								{
+									"key": "paymentMethodId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Subscriptions for User",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/api/subscriptions/user/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Upcoming Renewals",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/api/subscriptions/user/1/upcoming-renewals"
+					},
+					"response": []
+				},
+				{
+					"name": "Set Budget for Entertainment Category",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"maxLimit\": 50.00,\n    \"currentSpending\": 0.00\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/api/budgets/category/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Set Budget for Utilities Category",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"maxLimit\": 20.00,\n    \"currentSpending\": 0.00\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/api/budgets/category/2"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Budgets for User",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/api/budgets/user/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Budget by Category",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/api/budgets/category/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Subscription",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Netflix Standard\",\n    \"price\": 12.99,\n    \"billingFrequency\": \"MONTHLY\",\n    \"renewalDate\": \"2026-01-11\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/subscriptions/1?categoryId=1&paymentMethodId=1",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"subscriptions",
+								"1"
+							],
+							"query": [
+								{
+									"key": "categoryId",
+									"value": "1"
+								},
+								{
+									"key": "paymentMethodId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Budget Limit",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"maxLimit\": 75.00\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/api/budgets/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Record Netflix Payment",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"url": "{{baseURL}}/api/transactions/subscription/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Record Payment with Custom Date",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/transactions/subscription/2?transactionDate=2025-12-15T10:30:00",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"transactions",
+								"subscription",
+								"2"
+							],
+							"query": [
+								{
+									"key": "transactionDate",
+									"value": "2025-12-15T10:30:00"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Transaction History for Subscription",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/api/transactions/subscription/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Complete Financial Dashboard",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/api/finance/dashboard/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Disposable Income Only",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/api/finance/disposable-income/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Upcoming Renewals Dashboard",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/api/finance/renewals/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Spending Summary",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/api/finance/spending-summary/1"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Budget",
+			"item": [
+				{
+					"name": "deleteBudget",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": "{{baseURL}}/api/budgets/1"
+					},
+					"response": []
+				},
+				{
+					"name": "createBudget",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"maxLimit\": 500.00,\n    \"currentSpending\": 10.00\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/api/budgets/category/2"
+					},
+					"response": []
+				},
+				{
+					"name": "getAllBudgets",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/api/budgets"
+					},
+					"response": []
+				},
+				{
+					"name": "getBudgetByCategoryId",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/api/budgets/category/2"
+					},
+					"response": []
+				},
+				{
+					"name": "getBudgetById",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/api/budgets/1"
+					},
+					"response": []
+				},
+				{
+					"name": "getBudgetsByUserId",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/api/budgets/user/1"
+					},
+					"response": []
+				},
+				{
+					"name": "updateBudget",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"maxLimit\": 500.00\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/api/budgets/1"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Category",
+			"item": [
+				{
+					"name": "[Error]updateCategory",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Health\",\n    \"description\": \"Blablabla\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/api/categories/1"
+					},
+					"response": []
+				},
+				{
+					"name": "createCategory(2)",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Health\",\n    \"description\": \"Gym and Health\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/api/categories/user/1"
+					},
+					"response": []
+				},
+				{
+					"name": "createCategory",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Entertaiment\",\n    \"description\": \"Fun stuff, what we all love\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/api/categories/user/1"
+					},
+					"response": []
+				},
+				{
+					"name": "deleteCategory",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": "{{baseURL}}/api/categories/1"
+					},
+					"response": []
+				},
+				{
+					"name": "getAllCategories",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/api/categories"
+					},
+					"response": []
+				},
+				{
+					"name": "getCategoriesByUserId",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/api/categories/user/1"
+					},
+					"response": []
+				},
+				{
+					"name": "getCategoryById",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/api/categories/2"
+					},
+					"response": []
+				},
+				{
+					"name": "updateCategory",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Entertainment & Fun\",\n    \"description\": \"More fun\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/api/categories/1"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "PaymentMethod",
+			"item": [
+				{
+					"name": "createPaymentMethod",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"type\": \"DEBIT_CARD\",\n    \"details\": \"Visa ending in 1234\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/api/payment-methods/user/1"
+					},
+					"response": []
+				},
+				{
+					"name": "deletePaymentMethod",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": "{{baseURL}}/api/payment-methods/1"
+					},
+					"response": []
+				},
+				{
+					"name": "getAllPaymentMethods",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/api/payment-methods"
+					},
+					"response": []
+				},
+				{
+					"name": "getPaymentMethodById",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/api/payment-methods/1"
+					},
+					"response": []
+				},
+				{
+					"name": "getPaymentMethodsByUserId",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/api/payment-methods/1"
+					},
+					"response": []
+				},
+				{
+					"name": "getPaymentMethodsByUserIdAndType",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/api/payment-methods/user/1/type/DEBIT_CARD"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Transactions",
+			"item": [
+				{
+					"name": "createTransaction",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"url": "{{baseURL}}/api/transactions/subscription/1"
+					},
+					"response": []
+				},
+				{
+					"name": "createTransactionInPast",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/transactions/subscription/1?transactionDate=2025-12-06T10:13:35.559879",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"transactions",
+								"subscription",
+								"1"
+							],
+							"query": [
+								{
+									"key": "transactionDate",
+									"value": "2025-12-06T10:13:35.559879"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteTransaction/2",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": "{{baseURL}}/api/transactions/2"
+					},
+					"response": []
+				},
+				{
+					"name": "getTransactionById",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/api/transactions/2"
+					},
+					"response": []
+				},
+				{
+					"name": "getTransactionsBySubscriptionId",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/api/transactions/subscription/1"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Add User",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Bill Murray\",\n    \"email\": \"bill.murray@mail.com\",\n    \"monthlyIncome\": 5000.00\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/api/users"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Users",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"url": "{{baseURL}}/api/users"
+					},
+					"response": []
+				},
+				{
+					"name": "deleteUser",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": "{{baseURL}}/api/users/1"
+					},
+					"response": []
+				},
+				{
+					"name": "getUserById",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/api/users/1"
+					},
+					"response": []
+				},
+				{
+					"name": "updateUser",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Bill Murray\",\n    \"email\": \"bill.murray@mail.com\",\n    \"monthlyIncome\": 5000.00\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/api/users/1"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Subscription",
+			"item": [
+				{
+					"name": "Add new subscription less than 7 days",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Spotify\",\n    \"price\": 10.99,\n    \"billingFrequency\": \"MONTHLY\",\n    \"renewalDate\": \"2026-01-10\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/api/subscriptions/user/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Add new subscription",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Netflix\",\n    \"price\": 15.99,\n    \"billingFrequency\": \"MONTHLY\",\n    \"renewalDate\": \"2026-02-01\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/subscriptions/user/1?categoryId=2&paymentMethodId=1",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"subscriptions",
+								"user",
+								"1"
+							],
+							"query": [
+								{
+									"key": "categoryId",
+									"value": "2"
+								},
+								{
+									"key": "paymentMethodId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteSubscription",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"url": "{{baseURL}}/api/subscriptions/1"
+					},
+					"response": []
+				},
+				{
+					"name": "getAllSubscriptions",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/api/subscriptions"
+					},
+					"response": []
+				},
+				{
+					"name": "getSubscriptionById",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"url": "{{baseURL}}/api/subscriptions/1"
+					},
+					"response": []
+				},
+				{
+					"name": "getSubscriptionsByUserId",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{baseURL}}/api/subscriptions/user/1"
+					},
+					"response": []
+				},
+				{
+					"name": "getUpcomingRenewals",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"url": "{{baseURL}}/api/subscriptions/user/1/upcoming-renewals"
+					},
+					"response": []
+				},
+				{
+					"name": "updateSubscription",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Spotify\",\n    \"price\": 6.99,\n    \"billingFrequency\": \"MONTHLY\",\n    \"renewalDate\": \"2026-01-10\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/subscriptions/1?categoryId=1",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"subscriptions",
+								"1"
+							],
+							"query": [
+								{
+									"key": "categoryId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseURL",
+			"value": "http://localhost:8080",
+			"type": "default"
+		}
+	]
+}

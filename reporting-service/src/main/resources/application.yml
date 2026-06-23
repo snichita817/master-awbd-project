@@ -1,0 +1,53 @@
+spring:
+  application:
+    name: reporting-service
+  profiles:
+    active: dev
+  jpa:
+    show-sql: true
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+
+logging:
+  config: classpath:logback-spring.xml
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  tracing:
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans
+  endpoint:
+    health:
+      show-details: always
+  info:
+    env:
+      enabled: true
+
+info:
+  app:
+    name: reporting-service
+    description: Reporting and dashboard calculations for disposable income, renewals, and category spending.
+    version: 1.0.0
+
+server:
+  port: 8082
+
+services:
+  user-service-url: http://localhost:8080
+  finance-core-url: http://localhost:8081

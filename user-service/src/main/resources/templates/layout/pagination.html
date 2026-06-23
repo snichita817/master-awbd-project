@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<th:block th:fragment="pagNav(page, baseUrl, size, sort, dir, filter)"
+          th:with="base=${baseUrl + '?size=' + size + '&sort=' + sort + '&dir=' + dir + (filter != null ? ('&filter=' + filter) : '')}">
+
+    <div th:if="${page != null and page.totalPages > 1}"
+         style="display:flex;align-items:center;justify-content:center;gap:.5rem;margin-top:1.25rem;flex-wrap:wrap;">
+        <!-- First / Prev: rendered as <span> when on first page -->
+        <span th:if="${page.first}"  class="btn btn-secondary btn-sm disabled" style="pointer-events:none;opacity:.5;">« First</span>
+        <a th:unless="${page.first}" th:href="|${base}&page=0|" class="btn btn-secondary btn-sm">« First</a>
+        <span th:if="${page.first}"  class="btn btn-secondary btn-sm disabled" style="pointer-events:none;opacity:.5;"><- Prev</span>
+        <a th:unless="${page.first}" th:href="|${base}&page=${page.number - 1}|" class="btn btn-secondary btn-sm"><- Prev</a>
+
+        <!-- Page numbers -->
+        <th:block th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}">
+            <a th:href="|${base}&page=${i}|"
+               th:text="${i + 1}"
+               th:class="${i == page.number} ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm'"></a>
+        </th:block>
+
+        <!-- Next / Last: rendered as <span> when on last page -->
+        <span th:if="${page.last}"  class="btn btn-secondary btn-sm disabled" style="pointer-events:none;opacity:.5;">Next -></span>
+        <a th:unless="${page.last}" th:href="|${base}&page=${page.number + 1}|" class="btn btn-secondary btn-sm">Next -></a>
+        <span th:if="${page.last}"  class="btn btn-secondary btn-sm disabled" style="pointer-events:none;opacity:.5;">Last »</span>
+        <a th:unless="${page.last}" th:href="|${base}&page=${page.totalPages - 1}|" class="btn btn-secondary btn-sm">Last »</a>
+    </div>
+
+    <div th:if="${page != null}"
+         style="text-align:center;margin-top:.5rem;color:#718096;font-size:.875rem;"
+         th:text="'Page ' + (${page.number + 1}) + ' of ' + ${page.totalPages} + ' (' + ${page.totalElements} + ' total)'"></div>
+
+</th:block>
+</body>
+</html>

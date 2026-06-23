@@ -1,0 +1,8 @@
+services:
+  user-service-url: http://user-service:8080
+  finance-core-url: http://finance-core-service:8081
+
+management:
+  zipkin:
+    tracing:
+      endpoint: http://zipkin:9411/api/v2/spans

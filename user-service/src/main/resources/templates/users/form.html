@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::main})}" lang="en">
+<head>
+    <title th:text="${user.id == null ? 'New User' : 'Edit User'} + '  -  Finance Tracker'">User - Finance Tracker</title>
+</head>
+<body>
+<main>
+    <h1 th:text="${user.id == null ? 'New User' : 'Edit User'}">User</h1>
+
+    <div class="card">
+        <form th:action="${formAction}" th:object="${user}" method="post" novalidate>
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+            <div class="form-group">
+                <label for="name">Name <span style="color:#e53e3e;">*</span></label>
+                <input type="text" id="name" th:field="*{name}"
+                       placeholder="e.g. John Doe"
+                       required maxlength="100"/>
+                <div class="error-msg" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email <span style="color:#e53e3e;">*</span></label>
+                <input type="email" id="email" th:field="*{email}"
+                       placeholder="e.g. john@example.com"
+                       required maxlength="255"/>
+                <div class="error-msg" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="monthlyIncome">Monthly Income (RON) <span style="color:#e53e3e;">*</span></label>
+                <input type="number" id="monthlyIncome" th:field="*{monthlyIncome}"
+                       placeholder="e.g. 5000.00"
+                       required min="0" step="0.01"/>
+                <div class="error-msg" th:if="${#fields.hasErrors('monthlyIncome')}" th:errors="*{monthlyIncome}"></div>
+            </div>
+
+            <div th:if="${user.id == null}" style="font-size:.8rem;color:#718096;margin-bottom:1rem;">
+                A temporary password <strong>ChangeMe123!</strong> will be assigned. The user should change it after first login.
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a th:href="@{/users}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</main>
+</body>
+</html>

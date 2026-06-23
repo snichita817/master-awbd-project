@@ -1,0 +1,122 @@
+services:
+  user-db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: financetracker_users
+    ports:
+      - "3307:3306"
+    volumes:
+      - user_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  finance-core-db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: financetracker_core
+    ports:
+      - "3308:3306"
+    volumes:
+      - core_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  user-service:
+    build:
+      context: ./user-service
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+    depends_on:
+      user-db:
+        condition: service_healthy
+
+  finance-core-service:
+    build:
+      context: ./finance-core-service
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+    depends_on:
+      finance-core-db:
+        condition: service_healthy
+      user-service:
+        condition: service_started
+
+  reporting-service:
+    build:
+      context: ./reporting-service
+    restart: unless-stopped
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      user-service:
+        condition: service_started
+      finance-core-service:
+        condition: service_started
+
+  zipkin:
+    image: openzipkin/zipkin:3
+    restart: unless-stopped
+    ports:
+      - "9411:9411"
+
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      user-service:
+        condition: service_started
+      finance-core-service:
+        condition: service_started
+      reporting-service:
+        condition: service_started
+      zipkin:
+        condition: service_started
+
+  grafana:
+    image: grafana/grafana:11.3.1
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      prometheus:
+        condition: service_started
+
+volumes:
+  user_mysql_data:
+  core_mysql_data:
+  grafana_data:
